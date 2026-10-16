@@ -143,6 +143,9 @@ pub fn project_key(project_root: &Path) -> PathBuf {
             }
             common.parent().map(Path::to_path_buf)
         });
+        // Git's path spelling may differ from canonicalize (notably the
+        // Windows verbatim prefix); both checkouts must hash the same path.
+        let main = main.map(|main| main.canonicalize().unwrap_or(main));
         return match (main, root.strip_prefix(top)) {
             (Some(main), Ok(rel)) if rel.as_os_str().is_empty() => main,
             (Some(main), Ok(rel)) => main.join(rel),
@@ -670,7 +673,8 @@ mod tests {
         std::fs::create_dir_all(main.join("sub")).unwrap();
         let wt = base.join("wt");
         std::fs::create_dir_all(wt.join("sub")).unwrap();
-        let gitdir = main.canonicalize().unwrap().join(".git/worktrees/w1");
+        // Git records an ordinary absolute path, without Windows' verbatim prefix.
+        let gitdir = main.join(".git/worktrees/w1");
         std::fs::write(wt.join(".git"), format!("gitdir: {}\n", gitdir.display())).unwrap();
 
         let main_key = project_key(&main);

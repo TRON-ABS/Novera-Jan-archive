@@ -1491,24 +1491,31 @@ mod tests {
             .as_nanos();
         let main = std::env::temp_dir().join(format!("jan_wt_main_{tag}_{n}"));
         std::fs::create_dir_all(&main).unwrap();
-        let run = |args: &[&str]| -> bool {
-            std::process::Command::new("git")
+        let run = |args: &[&str]| {
+            let status = std::process::Command::new("git")
                 .args(args)
                 .current_dir(&main)
                 .status()
-                .map(|s| s.success())
-                .unwrap_or(false)
+                .expect("run git test fixture command");
+            assert!(status.success(), "git {args:?} failed: {status}");
         };
-        if !run(&["init", "-q", "."])
-            || !run(&["commit", "--allow-empty", "-q", "-m", "init"])
-        {
-            return None;
-        }
+        run(&["init", "-q", "."]);
+        run(&[
+            "-c",
+            "user.name=Jan tests",
+            "-c",
+            "user.email=jan-tests@example.invalid",
+            "-c",
+            "commit.gpgsign=false",
+            "commit",
+            "--allow-empty",
+            "-q",
+            "-m",
+            "init",
+        ]);
         let linked = std::env::temp_dir().join(format!("jan_wt_link_{tag}_{n}"));
         let l = linked.to_string_lossy().to_string();
-        if !run(&["worktree", "add", &l]) {
-            return None;
-        }
+        run(&["worktree", "add", "-q", &l]);
         Some((main, linked))
     }
 
@@ -1570,6 +1577,7 @@ mod tests {
         }
 
         /// Track a path created by the test itself (a symlink, say).
+        #[cfg(unix)]
         fn track(&mut self, path: std::path::PathBuf) {
             self.0.push(path);
         }
