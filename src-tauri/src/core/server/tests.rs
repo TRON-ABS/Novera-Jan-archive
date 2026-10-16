@@ -1174,6 +1174,48 @@ mod server_tests {
     }
 
     #[test]
+    fn strip_billing_header_preserves_multibyte_content() {
+        let boundary = "x-anthropic-billing-header:".len();
+        let prompts = [
+            "Ты извлекаешь финансовую информацию из текста".to_string(),
+            "😀".repeat(boundary),
+            format!("{}é — résumé en français", "a".repeat(boundary - 1)),
+        ];
+        for prompt in prompts {
+            assert!(!prompt.is_char_boundary(boundary));
+            assert_eq!(proxy::strip_anthropic_billing_header(&prompt), prompt);
+        }
+    }
+
+    #[test]
+    fn strip_billing_header_preserves_multibyte_body_content() {
+        let prompt = "Ты извлекаешь финансовую информацию из текста";
+        for content in [json!(prompt), json!([{ "type": "text", "text": prompt }])] {
+            let mut body = json!({
+                "system": content.clone(),
+                "messages": [{ "role": "user", "content": content }]
+            });
+            let original = body.clone();
+            proxy::strip_billing_header_in_body(&mut body);
+            assert_eq!(body, original);
+        }
+    }
+
+    #[test]
+    fn strip_billing_header_strips_header_before_multibyte_prompt() {
+        let prompt = "Résumé : café, 日本語 et 😀";
+        for header in [
+            "X-Anthropic-Billing-Header: cc_version=1;\n",
+            "x-anthropic-billing-header:\n cc_version=1;\n",
+        ] {
+            assert_eq!(
+                proxy::strip_anthropic_billing_header(&format!("{header}{prompt}")),
+                prompt
+            );
+        }
+    }
+
+    #[test]
     fn strip_billing_header_in_body_covers_system_and_first_message() {
         let header = "x-anthropic-billing-header: cc_version=1; cch=z;\n";
         let mut body = json!({
