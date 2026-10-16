@@ -2,7 +2,7 @@ use super::commands::*;
 use super::constants::{MESSAGES_FILE, THREADS_DIR, THREADS_FILE};
 use super::helpers::{
     get_lock_for_thread, read_messages_from_file, should_use_sqlite, update_thread_metadata,
-    write_messages_to_file,
+    write_messages_to_file, write_messages_to_file_with,
 };
 use super::utils::{
     ensure_data_dirs, ensure_thread_dir_exists, get_data_dir, get_messages_path, get_thread_dir,
@@ -12,8 +12,9 @@ use crate::core::app::commands::get_jan_data_folder_path;
 use futures_util::future;
 use serde_json::json;
 use std::fs;
+use std::io::Write;
 use std::path::PathBuf;
-use tauri::test::{mock_app, MockRuntime};
+use tauri::test::{MockRuntime, mock_app};
 
 // RAII guard that removes the test data dir on drop (panic-safe cleanup).
 struct DataDirGuard(PathBuf);
@@ -425,13 +426,15 @@ async fn test_thread_not_found_errors() {
             .await
             .is_err()
     );
-    assert!(create_thread_assistant(
-        app_handle.clone(),
-        fake_thread_id.clone(),
-        assistant.clone()
-    )
-    .await
-    .is_err());
+    assert!(
+        create_thread_assistant(
+            app_handle.clone(),
+            fake_thread_id.clone(),
+            assistant.clone()
+        )
+        .await
+        .is_err()
+    );
     assert!(
         modify_thread_assistant(app_handle, fake_thread_id, assistant)
             .await
@@ -476,9 +479,11 @@ async fn test_concurrent_message_operations() {
         .collect();
 
     let results = future::join_all(handles).await;
-    assert!(results
-        .iter()
-        .all(|r| r.is_ok() && r.as_ref().unwrap().is_ok()));
+    assert!(
+        results
+            .iter()
+            .all(|r| r.is_ok() && r.as_ref().unwrap().is_ok())
+    );
 
     let messages = list_messages(app_handle, thread_id).await.unwrap();
     assert_eq!(messages.len(), 5);
@@ -652,6 +657,80 @@ fn test_write_messages_jsonl_format_one_per_line() {
     for line in &lines {
         let _: serde_json::Value = serde_json::from_str(line).unwrap();
     }
+}
+
+#[test]
+fn test_write_messages_leaves_no_tmp_file_on_success() {
+    let tmp = tempfile::tempdir().unwrap();
+    let base = tmp.path();
+    ensure_thread_dir_exists(base, "no-tmp").unwrap();
+    let path = get_messages_path(base, "no-tmp");
+
+    write_messages_to_file(&[json!({"id": "a"}), json!({"id": "b"})], &path).unwrap();
+
+    let dir = path.parent().unwrap();
+    let stray_tmp: Vec<_> = fs::read_dir(dir)
+        .unwrap()
+        .map(|e| e.unwrap().file_name())
+        .filter(|n| n.to_string_lossy().ends_with(".tmp"))
+        .collect();
+    assert!(
+        stray_tmp.is_empty(),
+        "no .tmp file should remain after a successful atomic write, found: {stray_tmp:?}"
+    );
+}
+
+#[test]
+fn test_write_messages_ignores_stale_tmp_from_prior_crash() {
+    // Regression test for janhq/jan#8019: a stale legacy `.tmp` file left
+    // behind from a previous crashed write must not break the next write.
+    let tmp = tempfile::tempdir().unwrap();
+    let base = tmp.path();
+    ensure_thread_dir_exists(base, "stale-tmp").unwrap();
+    let path = get_messages_path(base, "stale-tmp");
+    let tmp_path = path.with_file_name(format!(
+        "{}.tmp",
+        path.file_name().unwrap().to_string_lossy()
+    ));
+
+    fs::write(&tmp_path, "garbage that is not JSONL\n{{{").unwrap();
+
+    write_messages_to_file(&[json!({"id": "fresh"})], &path).unwrap();
+
+    let read = read_messages_from_file(base, "stale-tmp").unwrap();
+    assert_eq!(read.len(), 1);
+    assert_eq!(read[0]["id"], "fresh");
+    assert_eq!(
+        fs::read_to_string(&tmp_path).unwrap(),
+        "garbage that is not JSONL\n{{{"
+    );
+}
+
+#[test]
+fn test_write_messages_preserves_existing_on_write_failure() {
+    // Regression test for janhq/jan#8019: a partial temporary write failure
+    // must leave the existing messages file intact.
+    let tmp = tempfile::tempdir().unwrap();
+    let base = tmp.path();
+    let path = base.join("messages.jsonl");
+    fs::write(&path, "original\n").unwrap();
+
+    let error = write_messages_to_file_with(&path, |file| {
+        file.write_all(b"partial data\n").unwrap();
+        Err("simulated write failure".to_string())
+    });
+
+    assert!(error.is_err());
+    assert_eq!(fs::read_to_string(&path).unwrap(), "original\n");
+    let stray_tmp: Vec<_> = fs::read_dir(base)
+        .unwrap()
+        .map(|e| e.unwrap().file_name())
+        .filter(|n| n.to_string_lossy().ends_with(".tmp"))
+        .collect();
+    assert!(
+        stray_tmp.is_empty(),
+        "failed rename should clean up its temporary file"
+    );
 }
 
 #[test]
