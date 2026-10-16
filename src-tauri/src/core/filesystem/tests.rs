@@ -34,6 +34,200 @@ fn test_mkdir() {
 }
 
 #[test]
+fn test_mkdir_rejects_path_outside_jan_data_folder() {
+    let app = tauri::test::mock_app();
+    let outside = unique_test_dir("mkdir-outside");
+    let result = mkdir(
+        app.handle().clone(),
+        vec![outside.to_string_lossy().to_string()],
+    );
+
+    assert!(result.is_err());
+    assert!(!outside.exists());
+}
+
+#[test]
+fn test_mkdir_rejects_parent_traversal() {
+    let app = tauri::test::mock_app();
+    let data = get_jan_data_folder_path(app.handle().clone());
+    let outside = data.parent().unwrap().join("filesystem-scope-mkdir-escape");
+    let result = mkdir(
+        app.handle().clone(),
+        vec![format!(
+            "../{}",
+            outside.file_name().unwrap().to_string_lossy()
+        )],
+    );
+
+    assert!(result.is_err());
+    assert!(!outside.exists());
+}
+
+#[test]
+fn test_mkdir_allows_file_uri_inside_jan_data_folder() {
+    let app = tauri::test::mock_app();
+    let path = "filesystem-scope-mkdir-inside";
+    let result = mkdir(app.handle().clone(), vec![format!("file://{path}")]);
+    let created = get_jan_data_folder_path(app.handle().clone()).join(path);
+
+    assert!(result.is_ok());
+    assert!(created.is_dir());
+    let _ = fs::remove_dir_all(created);
+}
+
+#[test]
+fn test_mv_rejects_source_outside_jan_data_folder() {
+    let app = tauri::test::mock_app();
+    let outside_dir = unique_test_dir("mv-outside-source");
+    fs::create_dir_all(&outside_dir).unwrap();
+    let outside_file = outside_dir.join("source.txt");
+    fs::write(&outside_file, "source").unwrap();
+    let destination = get_jan_data_folder_path(app.handle().clone()).join("moved.txt");
+
+    let result = mv(
+        app.handle().clone(),
+        vec![
+            outside_file.to_string_lossy().to_string(),
+            destination.to_string_lossy().to_string(),
+        ],
+    );
+
+    assert!(result.is_err());
+    assert!(outside_file.exists());
+    assert!(!destination.exists());
+    let _ = fs::remove_dir_all(outside_dir);
+}
+
+#[test]
+fn test_mv_rejects_destination_outside_jan_data_folder() {
+    let app = tauri::test::mock_app();
+    let data = get_jan_data_folder_path(app.handle().clone());
+    fs::create_dir_all(&data).unwrap();
+    let source = data.join("filesystem-scope-mv-source.txt");
+    fs::write(&source, "source").unwrap();
+    let outside_dir = unique_test_dir("mv-outside-destination");
+    fs::create_dir_all(&outside_dir).unwrap();
+    let destination = outside_dir.join("moved.txt");
+
+    let result = mv(
+        app.handle().clone(),
+        vec![
+            source.to_string_lossy().to_string(),
+            destination.to_string_lossy().to_string(),
+        ],
+    );
+
+    assert!(result.is_err());
+    assert!(source.exists());
+    assert!(!destination.exists());
+    let _ = fs::remove_file(source);
+    let _ = fs::remove_dir_all(outside_dir);
+}
+
+#[test]
+fn test_mv_allows_paths_inside_jan_data_folder() {
+    let app = tauri::test::mock_app();
+    let data = get_jan_data_folder_path(app.handle().clone());
+    fs::create_dir_all(&data).unwrap();
+    let source = data.join("filesystem-scope-mv-inside-source.txt");
+    let destination = data.join("filesystem-scope-mv-inside-destination.txt");
+    fs::write(&source, "source").unwrap();
+
+    let result = mv(
+        app.handle().clone(),
+        vec![
+            source.to_string_lossy().to_string(),
+            destination.to_string_lossy().to_string(),
+        ],
+    );
+
+    assert!(result.is_ok());
+    assert!(!source.exists());
+    assert_eq!(fs::read_to_string(&destination).unwrap(), "source");
+    let _ = fs::remove_file(destination);
+}
+
+#[test]
+fn test_write_file_sync_rejects_path_outside_jan_data_folder() {
+    let app = tauri::test::mock_app();
+    let outside_dir = unique_test_dir("write-outside");
+    fs::create_dir_all(&outside_dir).unwrap();
+    let outside_file = outside_dir.join("forbidden.txt");
+
+    let result = write_file_sync(
+        app.handle().clone(),
+        vec![
+            outside_file.to_string_lossy().to_string(),
+            "malicious content".to_string(),
+        ],
+    );
+
+    assert!(result.is_err());
+    assert!(!outside_file.exists());
+    let _ = fs::remove_dir_all(outside_dir);
+}
+
+#[test]
+fn test_write_file_sync_rejects_parent_traversal() {
+    let app = tauri::test::mock_app();
+    let data = get_jan_data_folder_path(app.handle().clone());
+    let outside = data
+        .parent()
+        .unwrap()
+        .join("filesystem-scope-write-escape.txt");
+
+    let result = write_file_sync(
+        app.handle().clone(),
+        vec![
+            format!("../{}", outside.file_name().unwrap().to_string_lossy()),
+            "malicious content".to_string(),
+        ],
+    );
+
+    assert!(result.is_err());
+    assert!(!outside.exists());
+}
+
+#[test]
+fn test_write_file_sync_allows_file_uri_inside_jan_data_folder() {
+    let app = tauri::test::mock_app();
+    let path = "filesystem-scope-write-inside.txt";
+    let result = write_file_sync(
+        app.handle().clone(),
+        vec![format!("file://{path}"), "allowed".to_string()],
+    );
+    let created = get_jan_data_folder_path(app.handle().clone()).join(path);
+
+    assert!(result.is_ok());
+    assert_eq!(fs::read_to_string(&created).unwrap(), "allowed");
+    let _ = fs::remove_file(created);
+}
+
+#[cfg(unix)]
+#[test]
+fn test_mkdir_rejects_symlink_escape() {
+    use std::os::unix::fs::symlink;
+
+    let app = tauri::test::mock_app();
+    let data = get_jan_data_folder_path(app.handle().clone());
+    let link = data.join("filesystem-scope-mkdir-link");
+    let outside = unique_test_dir("mkdir-symlink-outside");
+    fs::create_dir_all(&data).unwrap();
+    fs::create_dir_all(&outside).unwrap();
+    symlink(&outside, &link).unwrap();
+
+    let result = mkdir(
+        app.handle().clone(),
+        vec![link.join("created").to_string_lossy().to_string()],
+    );
+
+    assert!(result.is_err());
+    assert!(!outside.join("created").exists());
+    let _ = fs::remove_file(link);
+    let _ = fs::remove_dir_all(outside);
+}
+
+#[test]
 fn test_join_path() {
     let app = mock_app();
     let path = "file://test_dir";
