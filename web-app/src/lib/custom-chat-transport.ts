@@ -888,7 +888,18 @@ export class CustomChatTransport implements ChatTransport<UIMessage> {
   }
 
   protected getModelSelection(): { selectedProvider: string; selectedModel: Model | null } {
-    return useModelProvider.getState()
+    const state = useModelProvider.getState()
+    const threadModel = this.threadId
+      ? useThreads.getState().threads[this.threadId]?.model
+      : undefined
+    if (!threadModel) return state
+    // A tool turn can resume while a different conversation is on screen.
+    // Its provider/model must follow its own thread, not the global selector.
+    const provider = state.getProviderByName(threadModel.provider)
+    return {
+      selectedProvider: threadModel.provider,
+      selectedModel: provider?.models.find((model) => model.id === threadModel.id) ?? null,
+    }
   }
 
   setLastUserMessage(message: string): void {

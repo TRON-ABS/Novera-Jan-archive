@@ -12,7 +12,7 @@ import {
   type ChatInit,
   type LanguageModelUsage,
 } from 'ai'
-import { useEffect, useMemo, useRef, useCallback } from 'react'
+import { useEffect, useMemo, useCallback } from 'react'
 import { useChatSessions } from '@/stores/chat-session-store'
 import { useAppState } from '@/hooks/useAppState'
 
@@ -30,7 +30,6 @@ type CustomChatOptions = Omit<ChatInit<UIMessage>, 'transport'> &
 export function useChat(
   options?: CustomChatOptions
 ) {
-  const transportRef = useRef<CustomChatTransport | undefined>(undefined) // Using a ref here so we can update the model used in the transport without having to reload the page or recreate the transport
   const {
     sessionId,
     sessionTitle,
@@ -41,47 +40,52 @@ export function useChat(
   const ensureSession = useChatSessions((state) => state.ensureSession)
   const setSessionTitle = useChatSessions((state) => state.setSessionTitle)
   const updateStatus = useChatSessions((state) => state.updateStatus)
+  const getSessionData = useChatSessions((state) => state.getSessionData)
 
   // Get serviceHub and model metadata from app state
   const mcpToolNames = useAppState((state) => state.mcpToolNames)
   const ragToolNames = useAppState((state) => state.ragToolNames)
 
-  const existingSessionTransport = sessionId
-    ? useChatSessions.getState().sessions[sessionId]?.transport
-    : undefined
-
-  // Create transport immediately with modelId and provider
-  if (!transportRef.current) {
-    transportRef.current =
-      existingSessionTransport ?? new CustomChatTransport(systemMessage, sessionId)
-  } else if (
-    existingSessionTransport &&
-    transportRef.current !== existingSessionTransport
-  ) {
-    transportRef.current = existingSessionTransport
-  }
+  // Never share a transport between threads: it carries the model and thread id.
+  const transport = useMemo(() =>
+    (sessionId && useChatSessions.getState().sessions[sessionId]?.transport) ||
+      new CustomChatTransport(systemMessage, sessionId),
+    // System instructions are refreshed below without replacing the transport.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [sessionId]
+  )
+  const sessionData = sessionId ? getSessionData(sessionId) : undefined
+  if (sessionData) sessionData.callbacks = chatInitOptions
 
   useEffect(() => {
-    if (transportRef.current) {
-      transportRef.current.updateSystemMessage(systemMessage)
-    }
-  }, [systemMessage])
+    transport.updateSystemMessage(systemMessage)
+  }, [systemMessage, transport])
 
   // Update the token usage callback when it changes
   useEffect(() => {
-    if (transportRef.current) {
-      transportRef.current.setOnTokenUsage(onTokenUsage)
-    }
-  }, [onTokenUsage])
+    transport.setOnTokenUsage(onTokenUsage)
+  }, [onTokenUsage, transport])
 
   // Memoize to prevent calling ensureSession (which has side effects) on every render
   const chat = useMemo(() => {
-    if (!sessionId || !transportRef.current) return undefined
+    if (!sessionId || !sessionData) return undefined
 
     return ensureSession(
       sessionId,
-      transportRef.current,
-      () => new Chat({ ...chatInitOptions, transport: transportRef.current }),
+      transport,
+      () => new Chat({
+        ...chatInitOptions,
+        id: sessionId,
+        transport,
+        // The Chat survives navigation. Forward to this session's current view
+        // callbacks on return, keeping the last ones while it runs off-screen.
+        onFinish: (event) => sessionData.callbacks?.onFinish?.(event),
+        onError: (error) => sessionData.callbacks?.onError?.(error),
+        onToolCall: (event) => sessionData.callbacks?.onToolCall?.(event),
+        onData: (data) => sessionData.callbacks?.onData?.(data),
+        sendAutomaticallyWhen: (event) =>
+          sessionData.callbacks?.sendAutomaticallyWhen?.(event) ?? false,
+      }),
       sessionTitle
     )
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -96,7 +100,7 @@ export function useChat(
   const chatResult = useChatSDK({
     ...(chat
       ? { chat }
-      : { transport: transportRef.current, ...chatInitOptions }),
+      : { transport, ...chatInitOptions }),
     experimental_throttle: options?.experimental_throttle,
     resume: false,
   })
@@ -109,18 +113,18 @@ export function useChat(
 
   // Refresh tools when MCP or RAG tool names change (e.g., when MCP servers start/stop)
   useEffect(() => {
-    if (transportRef.current) {
+    if (transport) {
       // Use forceRefreshTools to update the transport's tool cache
       // This ensures the transport has the latest tools when MCP server status changes
-      transportRef.current.refreshTools()
+      transport.refreshTools()
     }
-  }, [mcpToolNames, ragToolNames])
+  }, [mcpToolNames, ragToolNames, transport])
 
   const setContinueFromContent = useCallback(
     (content: string | ContinuationContent) => {
-      transportRef.current?.setContinueFromContent(content)
+      transport.setContinueFromContent(content)
     },
-    []
+    [transport]
   )
 
   // Expose method to update RAG tools availability
@@ -130,15 +134,15 @@ export function useChat(
       modelSupportsTools: boolean,
       ragFeatureAvailable: boolean
     ) => {
-      if (transportRef.current) {
-        await transportRef.current.updateRagToolsAvailability(
+      if (transport) {
+        await transport.updateRagToolsAvailability(
           hasDocuments,
           modelSupportsTools,
           ragFeatureAvailable
         )
       }
     },
-    []
+    [transport]
   )
 
   return {

@@ -140,6 +140,7 @@ const h = vi.hoisted(() => {
   return {
     // The route's thread id, which the tests move to simulate a thread switch.
     routeParams: { threadId: 'thread-1' },
+    sessionDataByThread: new Map<string, any>(),
     mockSendMessage,
     mockRegenerate,
     mockStop,
@@ -411,7 +412,10 @@ vi.mock('@/hooks/useMessages', () => ({ useMessages: h.useMessagesMock }))
 vi.mock('@/hooks/useTools', () => ({ useTools: vi.fn() }))
 vi.mock('@/hooks/useAppState', () => ({ useAppState: h.useAppStateMock }))
 vi.mock('@/hooks/useModelProvider', () => ({ useModelProvider: h.useModelProviderMock }))
-vi.mock('@/stores/chat-session-store', () => ({ useChatSessions: h.useChatSessionsMock }))
+vi.mock('@/stores/chat-session-store', async (importOriginal) => ({
+  ...await importOriginal<typeof import('@/stores/chat-session-store')>(),
+  useChatSessions: h.useChatSessionsMock,
+}))
 vi.mock('@/hooks/useChatAttachments', () => ({
   useChatAttachments: h.useChatAttachmentsMock,
   NEW_THREAD_ATTACHMENT_KEY: '__new-thread__',
@@ -498,7 +502,10 @@ const renderComponent = () => {
 
 describe('ThreadDetail route', () => {
   beforeEach(() => {
+    for (const data of h.sessionDataByThread.values()) data.dispose?.()
+    h.sessionDataByThread.clear()
     vi.clearAllMocks()
+    h.routeParams.threadId = 'thread-1'
     h.chatState.messages = []
     h.chatState.status = 'ready'
     h.chatState.error = null
@@ -527,7 +534,11 @@ describe('ThreadDetail route', () => {
     h.messagesState.updateMessage = vi.fn()
     h.messagesState.deleteMessage = vi.fn()
     h.messagesState.setMessages = vi.fn()
-    h.chatSessionsState.getSessionData = vi.fn(() => ({ tools: [] }))
+    const data = h.sessionDataByThread
+    h.chatSessionsState.getSessionData = vi.fn((id: string) => {
+      if (!data.has(id)) data.set(id, { tools: [] })
+      return data.get(id)
+    })
     h.messageQueueState.dequeue = vi.fn(() => null)
     h.messageQueueState.clearQueue = vi.fn()
     h.agentModeState.agentThreads = {}
@@ -568,10 +579,10 @@ describe('ThreadDetail route', () => {
     expect(h.threadsState.setCurrentThreadId).toHaveBeenLastCalledWith(undefined)
   })
 
-  it('clears this thread pending tool approvals on unmount', () => {
+  it('keeps this thread pending tool approvals when its view unmounts', () => {
     const { unmount } = renderComponent()
     unmount()
-    expect(h.toolApprovalState.clearPendingForThread).toHaveBeenCalledWith('thread-1')
+    expect(h.toolApprovalState.clearPendingForThread).not.toHaveBeenCalled()
   })
 
   it('renders messages passed through useChat', () => {
@@ -1251,6 +1262,54 @@ describe('ThreadDetail route', () => {
         },
         isAbort: false,
       })
+
+    it('keeps pending approval and completes the original thread after navigating away', async () => {
+      h.appStateState.mcpToolNames = new Set(['fetch'])
+      let approve!: (value: boolean) => void
+      h.toolApprovalState.requestApproval = vi.fn(() => new Promise<boolean>((resolve) => { approve = resolve }))
+      const callTool = vi.fn().mockResolvedValue({ content: [{ type: 'text', text: 'result' }] })
+      hub.mcp = () => ({ callToolWithCancellation: () => ({ promise: callTool(), cancel: vi.fn(), token: 'test' }) })
+      const view = renderComponent()
+      const finishA = (h as any).capturedOnFinish
+      await act(async () => {
+        await (h as any).capturedOnToolCall(toolCall('background-tool'))
+        finishWithToolCalls()
+      })
+      h.threadsState.threads['thread-2'] = { ...h.threadsState.threads['thread-1'], id: 'thread-2' }
+      h.routeParams.threadId = 'thread-2'
+      const Component = Route.component as React.ComponentType
+      view.rerender(<Component />)
+      expect(h.toolApprovalState.clearPendingForThread).not.toHaveBeenCalledWith('thread-1')
+      expect(h.mockStop).not.toHaveBeenCalled()
+      await act(async () => { approve(true) })
+      await waitFor(() => expect(h.mockAddToolOutput).toHaveBeenCalledWith(expect.objectContaining({ toolCallId: 'background-tool' })))
+      expect(callTool).toHaveBeenCalledOnce()
+      act(() => finishA({ message: { id: 'final-background', role: 'assistant', parts: [{ type: 'text', text: 'Done' }] }, isAbort: false }))
+      expect(h.messagesState.addMessage).toHaveBeenCalledWith(expect.objectContaining({ id: 'final-background', thread_id: 'thread-1' }))
+    })
+
+    it('does not inject late tool output after Stop, including after leaving and returning', async () => {
+      h.appStateState.mcpToolNames = new Set(['fetch'])
+      let complete!: (value: any) => void
+      const callTool = vi.fn(() => new Promise((resolve) => { complete = resolve }))
+      hub.mcp = () => ({ callToolWithCancellation: () => ({ promise: callTool(), cancel: vi.fn(), token: 'test' }) })
+      const view = renderComponent()
+      await act(async () => {
+        await (h as any).capturedOnToolCall(toolCall('slow-tool'))
+        finishWithToolCalls()
+      })
+      h.threadsState.threads['thread-2'] = { ...h.threadsState.threads['thread-1'], id: 'thread-2' }
+      const Component = Route.component as React.ComponentType
+      h.routeParams.threadId = 'thread-2'
+      view.rerender(<Component />)
+      h.routeParams.threadId = 'thread-1'
+      view.rerender(<Component />)
+      act(() => screen.getByTestId('chat-stop').click())
+      await act(async () => { complete({ content: [{ type: 'text', text: 'too late' }] }) })
+      expect(h.mockStop).toHaveBeenCalledOnce()
+      expect(h.mockAddToolOutput).not.toHaveBeenCalled()
+      expect(h.appStateState.setThreadBusy).toHaveBeenCalledWith('thread-1', false)
+    })
 
     it('requests approval as soon as a tool call arrives, before onFinish', async () => {
       h.appStateState.mcpToolNames = new Set(['fetch'])
@@ -2036,7 +2095,7 @@ describe('ThreadDetail route', () => {
       // Leaving the thread resolves a pending approval as denied. It must be
       // recorded, or the call stays "Running" with nothing running, but not as a
       // refusal by the user: the model reads this on the next turn.
-      it('records a cut-short approval as the chat closing, not a user denial', async () => {
+      it('keeps approval pending after navigation and records a later user denial', async () => {
         h.appStateState.mcpToolNames = new Set(['fetch'])
         let decide: (approved: boolean) => void = () => {}
         h.toolApprovalState.requestApproval = vi.fn(
@@ -2058,14 +2117,14 @@ describe('ThreadDetail route', () => {
           expect.objectContaining({
             toolCallId: 'tcA',
             state: 'output-error',
-            errorText: expect.stringContaining('chat was closed'),
+            errorText: 'Tool execution denied by user',
           })
         )
       })
 
       // No reply follows once the thread is left, and a reply is what rewrites a
       // stored turn. Without a rewrite here the call reloads as "Running".
-      it('stores the outcome of a call cut short by leaving the thread', async () => {
+      it('persists the original turn when the background final reply arrives', async () => {
         h.appStateState.mcpToolNames = new Set(['fetch'])
         let decide: (approved: boolean) => void = () => {}
         h.toolApprovalState.requestApproval = vi.fn(
@@ -2087,7 +2146,7 @@ describe('ThreadDetail route', () => {
                       toolCallId: 'tcA',
                       input: {},
                       state: 'output-error',
-                      errorText: 'Tool call cancelled: the chat was closed before it ran.',
+                      errorText: 'Tool execution denied by user',
                     },
                   ],
                 },
@@ -2109,10 +2168,21 @@ describe('ThreadDetail route', () => {
           await act(async () => {
             await finishWithToolCalls()
           })
+          const finish = (h as any).capturedOnFinish
           unmount()
           await act(async () => {
             decide(false)
           })
+          act(() => finish({
+            message: {
+              id: 'a-tc', role: 'assistant',
+              parts: [
+                { type: 'tool-fetch', toolCallId: 'tcA', input: {}, state: 'output-error', errorText: 'Tool execution denied by user' },
+                { type: 'text', text: 'The tool was denied.' },
+              ],
+            },
+            isAbort: false,
+          }))
         } finally {
           h.chatSessionsState.sessions = {}
         }
@@ -2121,7 +2191,7 @@ describe('ThreadDetail route', () => {
           .map((c: any[]) => c[0])
           .find((m: any) => m.id === 'a-tc')
         expect(stored.metadata.toolErrors).toEqual({
-          tcA: expect.stringContaining('chat was closed'),
+          tcA: 'Tool execution denied by user',
         })
         expect(stored.metadata.stopped).toBeUndefined()
       })
@@ -2168,7 +2238,7 @@ describe('ThreadDetail route', () => {
       })
 
       // The calls queued behind the one awaiting approval are cut short too.
-      it('settles the calls queued behind one whose approval was cut short', async () => {
+      it('retains the queued approval after leaving until the user decides', async () => {
         h.appStateState.mcpToolNames = new Set(['fetch'])
         const decide: Record<string, (approved: boolean) => void> = {}
         h.toolApprovalState.requestApproval = vi.fn(
@@ -2185,6 +2255,10 @@ describe('ThreadDetail route', () => {
         unmount()
         await act(async () => {
           decide.tcA(false)
+        })
+        expect(h.mockAddToolOutput).toHaveBeenCalledTimes(1)
+        await act(async () => {
+          decide.tcB(false)
         })
 
         const settled = h.mockAddToolOutput.mock.calls.map(

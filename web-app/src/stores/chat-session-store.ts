@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { create } from "zustand";
 import type { Chat, UIMessage } from "@ai-sdk/react";
-import type { ChatStatus } from "ai";
+import type { ChatInit, ChatStatus } from "ai";
 import { CustomChatTransport } from "@/lib/custom-chat-transport";
 import { useMessageQueue } from "@/stores/message-queue-store";
 
@@ -9,7 +9,38 @@ export type SessionData = {
   tools: any[];
   messages: UIMessage[];
   idMap: Map<string, string>;
+  callbacks?: Pick<ChatInit<UIMessage>, 'onFinish' | 'onError' | 'onToolCall' | 'onData' | 'sendAutomaticallyWhen'>;
+  threadRuntime?: ThreadSessionRuntime;
+  dispose?: () => void;
+  disposed?: boolean;
 };
+
+// These refs belong to the conversation, including while its view is unmounted.
+export type ThreadSessionRuntime = {
+  stopped: boolean;
+  // The branch parent for the next assistant message, consumed in onFinish.
+  pendingAssistantParentId: { current: string | null };
+  // Continuing extends the stopped reply instead of creating another version.
+  continueReplaceIdRef: { current: string | null };
+  // Partial output to resume after the user increases the context window.
+  pendingContinuationRef: { current: { message: UIMessage; text: string } | null };
+};
+
+export function getThreadSessionRuntime(data: SessionData): ThreadSessionRuntime {
+  return data.threadRuntime ??= {
+    stopped: false,
+    pendingAssistantParentId: { current: null },
+    continueReplaceIdRef: { current: null },
+    pendingContinuationRef: { current: null },
+  };
+}
+
+function disposeSessionData(data: SessionData | undefined) {
+  if (!data) return;
+  data.disposed = true;
+  data.dispose?.();
+  data.callbacks = undefined;
+}
 
 export type ChatSession = {
   chat: Chat<UIMessage>;
@@ -173,6 +204,7 @@ export const useChatSessions = create<ChatSessionState>((set, get) => ({
   removeSession: (sessionId) => {
     const existing = get().sessions[sessionId];
     if (!existing) {
+      disposeSessionData(standaloneData[sessionId]);
       delete standaloneData[sessionId];
       return;
     }
@@ -190,6 +222,7 @@ export const useChatSessions = create<ChatSessionState>((set, get) => ({
       return { sessions: rest };
     });
 
+    disposeSessionData(existing.data);
     // Then cleanup (existing is a copy, safe to use after removal)
     existing.unsubscribers.forEach((unsubscribe) => {
       try {
@@ -215,6 +248,7 @@ export const useChatSessions = create<ChatSessionState>((set, get) => ({
     });
 
     Object.values(sessions).forEach((session) => {
+      disposeSessionData(session.data);
       session.unsubscribers.forEach((unsubscribe) => {
         try {
           unsubscribe();
@@ -231,6 +265,7 @@ export const useChatSessions = create<ChatSessionState>((set, get) => ({
 
     // Clear standalone data
     Object.keys(standaloneData).forEach((key) => {
+      disposeSessionData(standaloneData[key]);
       delete standaloneData[key];
     });
 

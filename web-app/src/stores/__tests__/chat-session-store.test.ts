@@ -194,6 +194,22 @@ describe('setSessionTitle', () => {
 })
 
 describe('removeSession', () => {
+  it('disposes a thread runtime before stopping its chat and drops its callbacks', () => {
+    const chat = makeChat('streaming')
+    useChatSessions.getState().ensureSession('background', {} as any, () => chat as any)
+    const data = useChatSessions.getState().getSessionData('background')
+    const dispose = vi.fn()
+    data.dispose = dispose
+    data.callbacks = { onFinish: vi.fn() }
+    chat.stop.mockImplementation(() => {
+      expect(data.disposed).toBe(true)
+      expect(dispose).toHaveBeenCalledOnce()
+      expect(data.callbacks).toBeUndefined()
+    })
+    useChatSessions.getState().removeSession('background')
+    expect(chat.stop).toHaveBeenCalledOnce()
+  })
+
   it('removes session, stops chat, unsubscribes, and clears queue', () => {
     const chat = makeChat('ready')
     useChatSessions.getState().ensureSession('s1', {} as any, () => chat as any)
@@ -227,6 +243,19 @@ describe('removeSession', () => {
 })
 
 describe('clearSessions', () => {
+  it('disposes both background sessions and standalone thread runtimes', () => {
+    const chat = makeChat()
+    useChatSessions.getState().ensureSession('background', {} as any, () => chat as any)
+    const data = useChatSessions.getState().getSessionData('background')
+    const orphan = useChatSessions.getState().getSessionData('orphan')
+    data.dispose = vi.fn()
+    orphan.dispose = vi.fn()
+    useChatSessions.getState().clearSessions()
+    expect(data.dispose).toHaveBeenCalledOnce()
+    expect(orphan.dispose).toHaveBeenCalledOnce()
+    expect(data.disposed).toBe(true)
+    expect(orphan.disposed).toBe(true)
+  })
   it('removes all sessions and resets active id', () => {
     const c1 = makeChat('ready')
     const c2 = makeChat('ready')

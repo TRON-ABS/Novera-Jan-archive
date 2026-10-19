@@ -31,7 +31,7 @@ import {
 } from '@/components/ai-elements/conversation'
 import { generateId, lastAssistantMessageIsCompleteWithToolCalls } from 'ai'
 import type { UIMessage } from '@ai-sdk/react'
-import { useChatSessions } from '@/stores/chat-session-store'
+import { getThreadSessionRuntime, useChatSessions } from '@/stores/chat-session-store'
 import {
   convertThreadMessagesToUIMessages,
   extractContentPartsFromUIMessage,
@@ -276,6 +276,13 @@ export const Route = createFileRoute('/threads/$threadId')({
 })
 
 function ThreadDetail() {
+  const { threadId } = useParams({ from: Route.id })
+  // Session callbacks may outlive the screen. Keep their React refs and SDK
+  // methods bound to one thread rather than reusing them for the next route.
+  return <ThreadConversation key={threadId} />
+}
+
+function ThreadConversation() {
   const serviceHub = useServiceHub()
   const { threadId } = useParams({ from: Route.id })
   const search = useSearch({ from: Route.id })
@@ -304,6 +311,20 @@ function ThreadDetail() {
   // Session data for tool call tracking
   const getSessionData = useChatSessions((state) => state.getSessionData)
   const sessionData = getSessionData(threadId)
+  const sessionRuntime = getThreadSessionRuntime(sessionData)
+  const { pendingContinuationRef, pendingAssistantParentId, continueReplaceIdRef } = sessionRuntime
+  sessionData.dispose = () => {
+    sessionRuntime.stopped = true
+    toolLoopControllers.get(threadId)?.abort()
+    toolStopControllers.get(threadId)?.abort()
+    toolLoopControllers.delete(threadId)
+    toolStopControllers.delete(threadId)
+    toolLoopGeneration.delete(threadId)
+    forgetApprovals(threadId)
+    useToolApprovalRequests.getState().clearPendingForThread(threadId)
+    sessionData.tools = []
+    useAppState.getState().setThreadBusy(threadId, false)
+  }
 
   const titleAbortRef = useRef<AbortController | null>(null)
 
@@ -311,12 +332,12 @@ function ThreadDetail() {
   const followUpMessage = useCallback(
     ({ messages }: { messages: UIMessage[] }) => {
       const controller = toolLoopControllers.get(threadId)
-      if (!controller || controller.signal.aborted) {
+      if (sessionData.disposed || sessionRuntime.stopped || controller?.signal.aborted) {
         return false
       }
       return lastAssistantMessageIsCompleteWithToolCalls({ messages })
     },
-    [threadId]
+    [threadId, sessionData, sessionRuntime]
   )
 
   // Subscribe directly to the thread data to ensure updates when model changes
@@ -389,25 +410,9 @@ function ThreadDetail() {
   const setChatMessagesRef = useRef<
     ((updater: (prev: UIMessage[]) => UIMessage[]) => void) | null
   >(null)
-  // Holds the partial assistant output captured when the model stops with
-  // `finishReason === 'length'`. Consumed by `handleContextSizeIncrease` so
-  // the manual "Increase Context Size" button resumes from where the stream
-  // stopped rather than regenerating from scratch.
-  const pendingContinuationRef = useRef<{
-    message: UIMessage
-    text: string
-  } | null>(null)
-  // Set before a generation when the resulting assistant message should be
-  // linked to a specific parent (versioning). Consumed once in onFinish.
-  const pendingAssistantParentId = useRef<string | null>(null)
   // n_ctx the local model launched with. onFinish is synchronous, so it is
   // fetched once streaming starts (the model is loaded by then).
   const launchedCtxLenRef = useRef<number | undefined>(undefined)
-  // Holds the id of a stopped assistant message being resumed. Continuing must
-  // extend the turn in place, not fork a new version, so onFinish deletes this
-  // stale partial once the continued reply is persisted.
-  const continueReplaceIdRef = useRef<string | null>(null)
-
   // Use the AI SDK chat hook
   const {
     messages: chatMessages,
@@ -426,6 +431,8 @@ function ThreadDetail() {
     systemMessage,
     experimental_throttle: 50,
     onFinish: ({ message: finishedMessage, isAbort, isError }) => {
+      if (sessionData.disposed) return
+      sessionRuntime.stopped = isAbort
       // A stopped turn can end with a tool call that never got to run; settle
       // it before it is persisted so its card does not read "Running" forever.
       const message = isAbort
@@ -681,6 +688,7 @@ function ThreadDetail() {
       // left can wait for them to land before it persists the turn.
       const outputs: Promise<unknown>[] = []
       const record = (output: Parameters<typeof addToolOutput>[0]) => {
+        if (sessionData.disposed) return
         outputs.push(Promise.resolve(addToolOutput(output)))
       }
 
@@ -957,6 +965,7 @@ function ThreadDetail() {
       }
     },
     onToolCall: ({ toolCall }) => {
+      if (sessionData.disposed) return
       // Collect the tool for the onFinish execution loop, and request approval
       // right now so the popup appears immediately instead of waiting for the
       // stream's terminal finish chunk (a stalled stream would otherwise leave
@@ -1007,6 +1016,7 @@ function ThreadDetail() {
   // drops the approval prompts, and settles whatever tool call never got to
   // finish so its card stops saying "Running" (and stays settled on reload).
   const handleStop = useCallback(() => {
+    sessionRuntime.stopped = true
     // The Stop controller outlives the thread-switch cleanup, which deletes the
     // loop controller, so it is what says which turn is still running a call.
     // One already aborted was stopped earlier; its loop is only winding down.
@@ -1038,7 +1048,7 @@ function ThreadDetail() {
     const stoppedId = turnId ?? live[live.length - 1].id
     const stoppedTurn = settled.find((m) => m.id === stoppedId)
     if (stoppedTurn) rewriteStoredTurn(threadId, stoppedTurn, true)
-  }, [threadId, stop, setChatMessages])
+  }, [threadId, stop, setChatMessages, sessionRuntime])
 
   // A new reply (regenerate, edit) replaces the turn it answers, so a tool call
   // that turn still has running is abandoned: ended like a Stop, before the new
@@ -1248,23 +1258,8 @@ function ThreadDetail() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  // The route component is reused across thread switches (no remount), so tear
-  // down the in-flight tool loop and release approvals waiting on the thread we
-  // are leaving. Cleanup captures the previous threadId; without this the
-  // unresolved approval promise keeps that thread marked busy forever.
-  useEffect(() => {
-    return () => {
-      toolLoopControllers.get(threadId)?.abort()
-      toolLoopControllers.delete(threadId)
-      forgetApprovals(threadId)
-      useToolApprovalRequests.getState().clearPendingForThread(threadId)
-      // Drop per-thread timing/progress/diff state from the shared runtime
-      // store. The cards for the thread we leave are unmounting, so a thread a
-      // later visit cannot show another thread's diff. (code.tsx re-hydrates
-      // its own diffs on mount, so it is unaffected by clearing here.)
-      useToolCallRuntime.getState().reset()
-    }
-  }, [threadId])
+  // Navigation only detaches the view; the session keeps its tools and
+  // approvals until the user stops the turn or deletes the conversation.
 
   // Resync the OOM/backend banner from message metadata on every thread switch.
   // Persisted by LlamacppOomListener at error time; unset state when this
@@ -1537,6 +1532,7 @@ function ThreadDetail() {
     },
     [
       sendMessage,
+      pendingAssistantParentId,
       threadId,
       thread,
       addMessage,
@@ -1776,6 +1772,7 @@ function ThreadDetail() {
     [
       regenerate,
       endRunningTools,
+      pendingAssistantParentId,
       stripBannerMetadata,
       contextLimitError,
       ensureBranched,
@@ -1803,7 +1800,7 @@ function ThreadDetail() {
       continueReplaceIdRef.current = messageId
       handleRegenerate(messageId)
     },
-    [chatMessages, setContinueFromContent, handleRegenerate]
+    [chatMessages, setContinueFromContent, handleRegenerate, continueReplaceIdRef]
   )
 
   // Editing forks a new sibling version (the original + its subtree are kept).
@@ -1838,6 +1835,7 @@ function ThreadDetail() {
     },
     [
       ensureBranched,
+      pendingAssistantParentId,
       addMessage,
       setActiveBranch,
       syncActivePath,
@@ -1956,6 +1954,7 @@ function ThreadDetail() {
     }, 1000)
   }, [
     selectedModel,
+    pendingContinuationRef,
     selectedProvider,
     getProviderByName,
     serviceHub,
