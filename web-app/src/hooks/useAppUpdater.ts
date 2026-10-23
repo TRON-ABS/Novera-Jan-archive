@@ -51,6 +51,7 @@ export const useAppUpdater = () => {
 
   const checkForUpdate = useCallback(
     async (resetRemindMeLater = false) => {
+      if (AUTO_UPDATER_DISABLED) return null
       console.log('Checking for updates...')
 
       try {

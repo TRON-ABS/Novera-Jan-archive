@@ -374,7 +374,7 @@ function General() {
                   description={t('settings:general.janCliDesc')}
                   actions={
                     <a
-                      href="https://www.jan.ai/docs/agent/quickstart"
+                      href="https://github.com/TRON-ABS/Novera#readme"
                       target="_blank"
                       rel="noopener noreferrer"
                     >
@@ -507,7 +507,7 @@ function General() {
                 description={t('settings:general.documentationDesc')}
                 actions={
                   <a
-                    href="https://jan.ai/docs"
+                    href="https://github.com/TRON-ABS/Novera#readme"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
@@ -523,7 +523,7 @@ function General() {
                 description={t('settings:general.releaseNotesDesc')}
                 actions={
                   <a
-                    href="https://github.com/janhq/jan/releases"
+                    href="https://github.com/TRON-ABS/Novera/releases"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
@@ -543,7 +543,7 @@ function General() {
                 description={t('settings:general.githubDesc')}
                 actions={
                   <a
-                    href="https://github.com/janhq/jan"
+                    href="https://github.com/TRON-ABS/Novera"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
@@ -555,11 +555,11 @@ function General() {
                 }
               />
               <CardItem
-                title={t('settings:general.discord')}
-                description={t('settings:general.discordDesc')}
+                title={t('settings:general.discussions')}
+                description={t('settings:general.discussionsDesc')}
                 actions={
                   <a
-                    href="https://discord.com/invite/FTk2MvZwJH"
+                    href="https://github.com/TRON-ABS/Novera/issues"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
@@ -579,7 +579,7 @@ function General() {
                 description={t('settings:general.reportAnIssueDesc')}
                 actions={
                   <a
-                    href="https://github.com/janhq/jan/issues/new"
+                    href="https://github.com/TRON-ABS/Novera/issues/new"
                     target="_blank"
                   >
                     <div className="flex items-center gap-1">

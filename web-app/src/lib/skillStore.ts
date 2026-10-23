@@ -18,7 +18,7 @@ export type { SkillMeta }
  * -- and Rust runs one implementation for both. Only the root differs, so this is
  * the single place that picks one:
  *
- * - `store`   -- the desktop's permanent store in the Jan data folder, managed
+ * - `store`   -- the desktop's permanent store in the Novera data folder, managed
  *                from Settings. Reached through the plugin's guest-js.
  * - `project` -- the folder's project store `~/.jan/projects/<slug>`, managed from the
  *                code screen.
@@ -42,7 +42,7 @@ export const projectScope = (folder: string): SkillScope => ({
 
 const dataFolder = async (): Promise<string> => {
   const folder = await getServiceHub().app().getJanDataFolder()
-  if (!folder) throw new Error('Jan data folder is unavailable')
+  if (!folder) throw new Error('Novera data folder is unavailable')
   return folder
 }
 

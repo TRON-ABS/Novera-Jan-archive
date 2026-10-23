@@ -28,7 +28,7 @@ use sha2::{Digest, Sha256};
 
 use crate::core::app::commands::resolve_jan_data_folder;
 
-const KEYRING_SERVICE: &str = "jan-providers";
+const KEYRING_SERVICE: &str = "novera-providers";
 const SECRETS_FILE_NAME: &str = "provider_secrets.enc";
 const SECRETS_INDEX_FILE_NAME: &str = "provider_secrets.index.json";
 const NONCE_LEN: usize = 12;

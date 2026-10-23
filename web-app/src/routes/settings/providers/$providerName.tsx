@@ -905,7 +905,7 @@ function ProviderDetail() {
                           </div>
 
                           <div className="text-xs text-muted-foreground">
-                            Primary key is <span className="font-medium">#1</span>. Jan
+                            Primary key is <span className="font-medium">#1</span>. Novera
                             retries the next key only on{' '}
                             <span className="font-medium">401/403/429</span>.
                           </div>

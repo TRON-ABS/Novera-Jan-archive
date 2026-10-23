@@ -246,7 +246,7 @@ const messageOf = (e: unknown): string =>
  * files from one conversation are invisible to the next; memory and skill tools
  * reach the permanent store instead and persist. No project path is passed --
  * the desktop has no project picker yet, so the plugin uses the permanent store
- * in the Jan data folder.
+ * in the Novera data folder.
  *
  * `shell` additionally runs under an OS sandbox whose network access is closed
  * unless the caller opens it. Chat never does; Cowork passes its own setting.
@@ -257,7 +257,7 @@ export async function executeAgentTool(
   threadId: string,
   /**
    * A project folder to attach read-only. Rust validates it and refuses one
-   * that overlaps the workspace or the Jan data folder, rather than silently
+   * that overlaps the workspace or the Novera data folder, rather than silently
    * dropping it, so an unusable attachment surfaces as a tool error.
    */
   readOnlyProject?: string | null,
@@ -284,7 +284,7 @@ export async function executeAgentTool(
 ): Promise<AgentToolResult> {
   try {
     const dataFolder = await getServiceHub().app().getJanDataFolder()
-    if (!dataFolder) return { error: 'Jan data folder is unavailable' }
+    if (!dataFolder) return { error: 'Novera data folder is unavailable' }
     const args =
       input && typeof input === 'object'
         ? (input as Record<string, unknown>)
@@ -333,7 +333,7 @@ export async function startAgentMonitor(
 ): Promise<{ output: string; isError?: boolean }> {
   try {
     const dataFolder = await getServiceHub().app().getJanDataFolder()
-    if (!dataFolder) return { output: 'ERROR: Jan data folder is unavailable', isError: true }
+    if (!dataFolder) return { output: 'ERROR: Novera data folder is unavailable', isError: true }
     const input =
       args && typeof args === 'object' ? (args as Record<string, unknown>) : {}
     const output = await startMonitor(dataFolder, sessionId, input, onUpdate, {

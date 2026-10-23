@@ -98,9 +98,10 @@ fn is_jan_router(proc: &ProcInfo, llamacpp_dir: &str) -> bool {
         && preset.starts_with(&format!("{llamacpp_dir}/"))
 }
 
-/// A Jan process, judged by name: `Jan`, `jan`, `Jan.exe`, `Jan-Desktop.exe`.
+/// A Jan process, judged by name: `Jan`, `jan`, `Jan.exe`, `Novera-Desktop.exe`.
 fn is_jan(name: &str) -> bool {
-    name.to_ascii_lowercase().contains("jan")
+    let name = name.to_ascii_lowercase();
+    name.contains("jan") || name.contains("novera")
 }
 
 /// Whether `parent` could really be the parent of `child`: a parent cannot have
@@ -314,7 +315,7 @@ mod tests {
     fn a_router_whose_jan_is_still_running_is_left_alone() {
         // `jan-cli` is the 0.8.4 CLI: `jan serve --detach` keeps its router as
         // a live child, so a detached server is not an orphan.
-        for jan in ["Jan", "jan", "Jan.exe", "Jan-Desktop.exe", "jan-cli"] {
+        for jan in ["Jan", "jan", "Jan.exe", "Jan-Desktop.exe", "jan-cli", "Novera", "Novera-Desktop.exe"] {
             let procs = [proc(50, Some(1), jan, &[jan]), router(200, Some(50))];
             assert!(sweep(&procs).is_empty(), "{jan} still owns its engine");
         }

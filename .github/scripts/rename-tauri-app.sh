@@ -24,9 +24,9 @@ fi
 
 # Use jq to transform the content
 jq --arg channel "$CHANNEL" --arg updater "$UPDATER" '
-    .productName = "Jan-\($channel)" |
-    .identifier = "jan-\($channel).ai.app" |
-    .mainBinaryName = "Jan-Desktop-\($channel)"
+    .productName = "Novera-\($channel)" |
+    .identifier = "io.github.tronabs.novera-\($channel)" |
+    .mainBinaryName = "Novera-Desktop-\($channel)"
 ' "$INPUT_JSON_FILE" > ./tauri.conf.json.tmp
 
 cat ./tauri.conf.json.tmp
@@ -39,23 +39,23 @@ mv ./tauri.conf.json.tmp $INPUT_JSON_FILE
 CARGO_TOML_PATH="$(dirname "$INPUT_JSON_FILE")/Cargo.toml"
 if [ -f "$CARGO_TOML_PATH" ]; then
     echo "Renaming the desktop bin target in $CARGO_TOML_PATH..."
-    sed -e "s|^name = \"Jan-Desktop\"$|name = \"Jan-Desktop-${CHANNEL}\"|" \
-        -e "s|^default-run = \"Jan-Desktop\"$|default-run = \"Jan-Desktop-${CHANNEL}\"|" \
+    sed -e "s|^name = \"Novera-Desktop\"$|name = \"Novera-Desktop-${CHANNEL}\"|" \
+        -e "s|^default-run = \"Novera-Desktop\"$|default-run = \"Novera-Desktop-${CHANNEL}\"|" \
         "$CARGO_TOML_PATH" > ./Cargo.toml.tmp
     mv ./Cargo.toml.tmp "$CARGO_TOML_PATH"
-    grep -c "Jan-Desktop-${CHANNEL}" "$CARGO_TOML_PATH"
+    grep -c "Novera-Desktop-${CHANNEL}" "$CARGO_TOML_PATH"
 fi
 
 # Update Info.plist if it exists
 INFO_PLIST_PATH="./src-tauri/Info.plist"
 if [ -f "$INFO_PLIST_PATH" ]; then
     echo "Updating Info.plist..."
-    
+
     # Replace jan.ai.app with jan-{channel}.ai.app
-    sed -i '' "s|jan\.ai\.app|jan-${CHANNEL}.ai.app|g" "$INFO_PLIST_PATH"
-    
-    # Replace <string>jan</string> with <string>jan-{channel}</string>
-    sed -i '' "s|<string>jan</string>|<string>jan-${CHANNEL}</string>|g" "$INFO_PLIST_PATH"
+    sed -i '' "s|io\.github\.tronabs\.novera|io.github.tronabs.novera-${CHANNEL}|g" "$INFO_PLIST_PATH"
+
+    # Replace <string>novera</string> with <string>jan-{channel}</string>
+    sed -i '' "s|<string>novera</string>|<string>novera-${CHANNEL}</string>|g" "$INFO_PLIST_PATH"
 
     echo "Info.plist updated"
 
@@ -70,7 +70,7 @@ fi
 # fi
 
 # Perform the replacements
-# sed -i -e "s#Jan#Jan-$CHANNEL#g" "$LAYOUT_FILE_PATH"
+# sed -i -e "s#Jan#Novera-$CHANNEL#g" "$LAYOUT_FILE_PATH"
 
 # Notify completion
 # echo "File has been updated: $LAYOUT_FILE_PATH"

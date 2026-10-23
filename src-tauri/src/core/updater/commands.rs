@@ -18,7 +18,8 @@ pub async fn check_for_app_updates(
     let endpoints = get_updater_endpoints(&app);
 
     if endpoints.is_empty() {
-        return Err("No updater endpoints configured in tauri.conf.json".to_string());
+        // Novera has no signed update feed configured yet.
+        return Ok(None);
     }
 
     let updater = CustomUpdater::new().map_err(|e| e.to_string())?;

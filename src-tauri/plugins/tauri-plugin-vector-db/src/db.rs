@@ -59,7 +59,7 @@ pub struct MinimalChunkInput {
 /// would put the plugin -- and only the plugin -- back on the real profile.
 pub fn base_dir_in(data_root: &Path) -> PathBuf {
     let mut base = data_root.to_path_buf();
-    base.push("Jan");
+    base.push("Novera");
     base.push("data");
     base.push("db");
     base

@@ -1,7 +1,7 @@
 //! Analytics identity for the headless `jan` CLI.
 //!
 //! Holds the persisted anonymous install id (analogous to the desktop's
-//! `nonce_seed` session, see `core::updater::session`) and the `Jan-Agent/...`
+//! `nonce_seed` session, see `core::updater::session`) and the `Novera-Agent/...`
 //! user agent. Both are consumed by `updater::fetch_manifest`, which checks for
 //! updates through the analytics proxy so that the check itself is the usage
 //! record -- the same way a desktop update check is recorded. Nothing here
@@ -108,6 +108,6 @@ mod tests {
     #[test]
     fn user_agent_names_the_agent_not_the_desktop() {
         let ua = user_agent("0.8.4-37");
-        assert!(ua.starts_with("Jan-Agent/0.8.4-37 ("), "{ua}");
+        assert!(ua.starts_with("Novera-Agent/0.8.4-37 ("), "{ua}");
     }
 }

@@ -40,7 +40,7 @@ const EXPIRY_SKEW: Duration = Duration::from_secs(60);
 
 /// Client name sent during dynamic registration; what the user sees on the
 /// provider's consent screen.
-const CLIENT_NAME: &str = "Jan";
+const CLIENT_NAME: &str = "Novera";
 
 /// Marker the desktop's `activate_mcp_server` prefixes onto an error the user
 /// fixes by signing in, so the settings UI can offer an `Authenticate` button
@@ -371,7 +371,7 @@ pub async fn begin(server: &str, url: &str) -> Result<PendingAuth, String> {
         let detail: String = body.lines().next().unwrap_or("").trim().chars().take(200).collect();
         return Err(format!(
             "OAuth client registration for '{server}' was rejected (POST {endpoint}: HTTP {status}): {detail}. \
-             The provider must issue or approve a client ID for Jan before browser sign-in can work."
+             The provider must issue or approve a client ID for Novera before browser sign-in can work."
         ));
     }
     #[derive(Deserialize)]
@@ -563,7 +563,7 @@ fn parse_callback_query(query: &str) -> Option<Result<Callback, String>> {
 /// need any.
 fn callback_page(outcome: &Option<Result<Callback, String>>) -> String {
     let (title, detail) = match outcome {
-        Some(Ok(_)) => ("Signed in", "You can close this tab and return to Jan."),
+        Some(Ok(_)) => ("Signed in", "You can close this tab and return to Novera."),
         Some(Err(e)) => ("Sign-in failed", e.as_str()),
         None => (
             "Not found",
@@ -572,7 +572,7 @@ fn callback_page(outcome: &Option<Result<Callback, String>>) -> String {
     };
     let detail = escape_html(detail);
     format!(
-        "<!doctype html><html><head><meta charset=\"utf-8\"><title>Jan - {title}</title></head>\
+        "<!doctype html><html><head><meta charset=\"utf-8\"><title>Novera - {title}</title></head>\
          <body style=\"font-family:system-ui,sans-serif;margin:4rem auto;max-width:32rem\">\
          <h1>{title}</h1><p>{detail}</p></body></html>"
     )

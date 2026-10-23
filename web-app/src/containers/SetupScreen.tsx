@@ -77,7 +77,7 @@ function ModelCard({
       className="bg-secondary/50 p-3 rounded-lg border flex items-center gap-3"
     >
       <div className="shrink-0 size-12 bg-background rounded-xl flex items-center justify-center">
-        <img src="/images/jan-logo.png" alt="Jan Logo" className="size-6" />
+        <img src="/images/novera-logo.png" alt="Novera Logo" className="size-6" />
       </div>
 
       <div className="min-w-0 flex-1">

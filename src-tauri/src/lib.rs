@@ -414,7 +414,7 @@ pub fn run() {
             // Not in e2e builds: on Windows `register_all` writes HKCU
             // Software\Classes\jan\shell\open\command and points it at the
             // running exe, so every run would repoint the developer's real
-            // `jan://` handler at target/debug/Jan-Desktop.exe. The registry is
+            // `jan://` handler at target/debug/Novera-Desktop.exe. The registry is
             // outside everything the harness's env overrides can reach. (On
             // Linux it writes into `data_dir()/applications`, which XDG_DATA_HOME
             // does redirect -- but no spec opens a deep link, so skip both.)

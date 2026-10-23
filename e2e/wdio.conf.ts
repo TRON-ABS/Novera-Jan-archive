@@ -38,7 +38,7 @@ const repoRoot = resolve(import.meta.dirname, '..')
 const appBinary = join(
   repoRoot,
   'src-tauri/target/debug',
-  process.platform === 'win32' ? 'Jan-Desktop.exe' : 'Jan-Desktop'
+  process.platform === 'win32' ? 'Novera-Desktop.exe' : 'Novera-Desktop'
 )
 
 // Fail here rather than 2 minutes later inside a driver-connection retry loop,
@@ -338,7 +338,7 @@ export const config: WebdriverIO.Config = {
   // and an expensive one to chase.
   //
   // Two ways to get there, both ordinary: a second `yarn test` in another
-  // terminal, or an orphaned Jan-Desktop from a hard-killed run (the service
+  // terminal, or an orphaned Novera-Desktop from a hard-killed run (the service
   // spawns with detached:false, which does not tie the child's lifetime to the
   // launcher's -- SIGKILL the launcher and the app survives holding the port).
   //
@@ -356,11 +356,11 @@ export const config: WebdriverIO.Config = {
       `something is already listening on 127.0.0.1:${driverPort}, the port the ` +
         'embedded WebDriver server uses. This run would drive that process ' +
         'instead of the app it launches. Most likely another e2e run is in ' +
-        'progress, or a previous one was killed and left Jan-Desktop alive ' +
+        'progress, or a previous one was killed and left Novera-Desktop alive ' +
         `(\`${
           process.platform === 'win32'
-            ? 'taskkill /IM Jan-Desktop.exe /F'
-            : 'pkill -f Jan-Desktop'
+            ? 'taskkill /IM Novera-Desktop.exe /F'
+            : 'pkill -f Novera-Desktop'
         }\`). To use a different port instead, set TAURI_WEBDRIVER_PORT.`
     )
   },

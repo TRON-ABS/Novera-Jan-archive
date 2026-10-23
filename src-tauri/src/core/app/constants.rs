@@ -3,7 +3,7 @@ pub const CONFIGURATION_FILE_NAME: &str = "settings.json";
 
 /// Tauri bundle `identifier` from `tauri.conf.json`. Used only as a fallback
 /// source for legacy config recovery.
-pub const TAURI_BUNDLE_IDENTIFIER: &str = "jan.ai.app";
+pub const TAURI_BUNDLE_IDENTIFIER: &str = "io.github.tronabs.novera";
 
 // Categorised lists of Jan data directories and files.
 // The factory-reset logic selectively deletes by category based on user choices.
@@ -63,7 +63,7 @@ mod tests {
 
     #[test]
     fn tauri_bundle_identifier_is_stable() {
-        assert_eq!(TAURI_BUNDLE_IDENTIFIER, "jan.ai.app");
+        assert_eq!(TAURI_BUNDLE_IDENTIFIER, "io.github.tronabs.novera");
     }
 
     #[test]

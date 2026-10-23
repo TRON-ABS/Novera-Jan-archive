@@ -2805,6 +2805,7 @@ __metadata:
     "@radix-ui/react-avatar": "npm:^1.1.11"
     "@radix-ui/react-collapsible": "npm:^1.1.12"
     "@radix-ui/react-dialog": "npm:^1.1.15"
+    "@radix-ui/react-direction": "npm:1.1.1"
     "@radix-ui/react-dropdown-menu": "npm:^2.1.16"
     "@radix-ui/react-hover-card": "npm:^1.1.15"
     "@radix-ui/react-label": "npm:^2.1.8"
@@ -3004,6 +3005,7 @@ __metadata:
     "@radix-ui/react-avatar": "npm:1.1.10"
     "@radix-ui/react-collapsible": "npm:^1.1.12"
     "@radix-ui/react-dialog": "npm:^1.1.15"
+    "@radix-ui/react-direction": "npm:1.1.1"
     "@radix-ui/react-dropdown-menu": "npm:^2.1.16"
     "@radix-ui/react-hover-card": "npm:^1.1.15"
     "@radix-ui/react-popover": "npm:1.1.14"
@@ -13431,9 +13433,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jan-app@workspace:.":
+"novera-app@workspace:.":
   version: 0.0.0-use.local
-  resolution: "jan-app@workspace:."
+  resolution: "novera-app@workspace:."
   dependencies:
     "@tauri-apps/cli": "npm:^2.7.0"
     "@vitest/coverage-v8": "npm:^3.1.3"

@@ -142,7 +142,7 @@ jobs:
         run: yarn install
 
       # Produces the debug binary the harness expects at
-      # src-tauri/target/debug/Jan-Desktop[.exe].
+      # src-tauri/target/debug/Novera-Desktop[.exe].
       - name: Build the app with --features e2e
         run: yarn build:e2e:app
 

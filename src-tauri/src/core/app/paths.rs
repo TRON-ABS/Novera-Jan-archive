@@ -37,7 +37,7 @@
 //!
 //! Distinct from `JAN_DATA_FOLDER`, which is older, read by
 //! `resolve_jan_data_folder()`, and names the *data folder itself*
-//! (`<root>/Jan/data` by default). `JAN_DATA_ROOT` names the OS-level root that
+//! (`<root>/Novera/data` by default). `JAN_DATA_ROOT` names the OS-level root that
 //! folder is resolved under.
 
 use std::ffi::OsString;
@@ -90,7 +90,7 @@ pub fn data_dir_for<R: Runtime>(app: &AppHandle<R>) -> tauri::Result<PathBuf> {
 }
 
 /// The bundle-identifier subdirectory of [`data_dir_for`], e.g.
-/// `<root>/jan.ai.app`.
+/// `<root>/io.github.tronabs.novera`.
 ///
 /// Use in place of `app.path().app_data_dir()`. Mirrors Tauri's own definition
 /// (`data_dir()` joined with `config.identifier`) rather than the

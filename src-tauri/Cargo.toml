@@ -1,10 +1,10 @@
 [package]
 name = "Jan"
 version = "0.8.5"
-description = "Use offline LLMs with your own data. Run open source models like Llama2 or Falcon on your internal computers/servers."
-authors = ["Jan <service@jan.ai>"]
+description = "Novera: an independent AI assistant for local and cloud models."
+authors = ["TRON-ABS", "Jan contributors"]
 license = "Apache-2.0"
-repository = "https://github.com/janhq/jan"
+repository = "https://github.com/TRON-ABS/Novera"
 edition = "2021"
 # 1.88 is the floor: `agent-client-protocol` (the experimental `jan acp`
 # server) declares it. Before that, 1.85 was the floor because `genai` (the
@@ -12,14 +12,14 @@ edition = "2021"
 # `Option::is_none_or` in agent/loop.rs.
 rust-version = "1.88"
 resolver = "2"
-default-run = "Jan-Desktop"
+default-run = "Novera-Desktop"
 
 [lib]
 name = "app_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [[bin]]
-name = "Jan-Desktop"
+name = "Novera-Desktop"
 path = "src/main.rs"
 required-features = ["desktop"]
 

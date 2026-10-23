@@ -1,6 +1,6 @@
 /**
  * Tauri Updater Service - Desktop implementation
- * 
+ *
  * This service uses a custom update check with HMAC request signing:
  * 1. First tries primary endpoint (from tauri.conf.json) with signed request
  * 2. Falls back to other endpoints without signing if primary fails
@@ -39,13 +39,13 @@ async function getNonceSeed(): Promise<string> {
     try {
       const store = await load(STORE_NAME, { autoSave: true, defaults: {} })
       let nonceSeed = await store.get<string>(NONCE_SEED_KEY)
-      
+
       if (!nonceSeed) {
         nonceSeed = crypto.randomUUID()
         await store.set(NONCE_SEED_KEY, nonceSeed)
         await store.save()
       }
-      
+
       cachedNonceSeed = nonceSeed
       return nonceSeed
     } catch (error) {
@@ -79,6 +79,7 @@ export class TauriUpdaterService extends DefaultUpdaterService {
    * Falls back to standard Tauri updater if custom check fails
    */
   async check(): Promise<UpdateInfo | null> {
+    if (AUTO_UPDATER_DISABLED) return null
     try {
       const nonceSeed = await getNonceSeed()
       const currentVersion = await getCurrentVersion()
@@ -111,7 +112,7 @@ export class TauriUpdaterService extends DefaultUpdaterService {
 
       // Fallback to standard Tauri updater (uses tauri.conf.json endpoints)
       const update: Update | null = await check()
-      
+
       if (!update) return null
 
       return {
@@ -126,6 +127,7 @@ export class TauriUpdaterService extends DefaultUpdaterService {
   }
 
   async installAndRestart(): Promise<void> {
+    if (AUTO_UPDATER_DISABLED) return
     try {
       const update = await check()
       if (update) {
@@ -141,6 +143,7 @@ export class TauriUpdaterService extends DefaultUpdaterService {
   async downloadAndInstallWithProgress(
     progressCallback: (event: UpdateProgressEvent) => void
   ): Promise<void> {
+    if (AUTO_UPDATER_DISABLED) return
     try {
       const update = await check()
       if (!update) {
@@ -179,4 +182,3 @@ export class TauriUpdaterService extends DefaultUpdaterService {
     }
   }
 }
-

@@ -1,5 +1,5 @@
 {
-  "identifier": "jan.ai.app.ios",
+  "identifier": "io.github.tronabs.novera.ios",
   "build": {
     "devUrl": null,
     "frontendDist": "../web-app/dist",

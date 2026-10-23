@@ -1,0 +1,362 @@
+[
+  {
+    "locale": "en",
+    "language": "English",
+    "label": "English",
+    "direction": "ltr",
+    "keys": 1463,
+    "total": 1463,
+    "partial": false,
+    "source_pr": null
+  },
+  {
+    "locale": "bn",
+    "language": "Bengali",
+    "label": "বাংলা",
+    "direction": "ltr",
+    "keys": 1463,
+    "total": 1463,
+    "partial": false,
+    "source_pr": 9381
+  },
+  {
+    "locale": "ar",
+    "language": "Modern Standard Arabic",
+    "label": "العربية",
+    "direction": "rtl",
+    "keys": 1463,
+    "total": 1463,
+    "partial": false,
+    "source_pr": 9382
+  },
+  {
+    "locale": "ur",
+    "language": "Urdu",
+    "label": "اردو",
+    "direction": "rtl",
+    "keys": 1463,
+    "total": 1463,
+    "partial": false,
+    "source_pr": 9397
+  },
+  {
+    "locale": "pcm",
+    "language": "Nigerian Pidgin",
+    "label": "Naijíriá Píjin",
+    "direction": "ltr",
+    "keys": 1463,
+    "total": 1463,
+    "partial": false,
+    "source_pr": 9398
+  },
+  {
+    "locale": "arz",
+    "language": "Egyptian Arabic",
+    "label": "مصري",
+    "direction": "rtl",
+    "keys": 1463,
+    "total": 1463,
+    "partial": false,
+    "source_pr": 9400
+  },
+  {
+    "locale": "mr",
+    "language": "Marathi",
+    "label": "मराठी",
+    "direction": "ltr",
+    "keys": 1463,
+    "total": 1463,
+    "partial": false,
+    "source_pr": 9401
+  },
+  {
+    "locale": "te",
+    "language": "Telugu",
+    "label": "తెలుగు",
+    "direction": "ltr",
+    "keys": 1463,
+    "total": 1463,
+    "partial": false,
+    "source_pr": 9402
+  },
+  {
+    "locale": "ta",
+    "language": "Tamil",
+    "label": "தமிழ்",
+    "direction": "ltr",
+    "keys": 1463,
+    "total": 1463,
+    "partial": false,
+    "source_pr": 9403
+  },
+  {
+    "locale": "sw",
+    "language": "Swahili",
+    "label": "Kiswahili",
+    "direction": "ltr",
+    "keys": 1463,
+    "total": 1463,
+    "partial": false,
+    "source_pr": 9404
+  },
+  {
+    "locale": "ha",
+    "language": "Hausa",
+    "label": "Hausa",
+    "direction": "ltr",
+    "keys": 1463,
+    "total": 1463,
+    "partial": false,
+    "source_pr": 9406
+  },
+  {
+    "locale": "pnb",
+    "language": "Western Punjabi (Shahmukhi)",
+    "label": "پنجابی (شاہ مکھی)",
+    "direction": "rtl",
+    "keys": 1463,
+    "total": 1463,
+    "partial": false,
+    "source_pr": 9408
+  },
+  {
+    "locale": "tl",
+    "language": "Tagalog",
+    "label": "Tagalog",
+    "direction": "ltr",
+    "keys": 1463,
+    "total": 1463,
+    "partial": false,
+    "source_pr": 9409
+  },
+  {
+    "locale": "pt-PT",
+    "language": "Portuguese (Portugal)",
+    "label": "Português (Portugal)",
+    "direction": "ltr",
+    "keys": 1463,
+    "total": 1463,
+    "partial": false,
+    "source_pr": 9410
+  },
+  {
+    "locale": "yue",
+    "language": "Cantonese",
+    "label": "粵語",
+    "direction": "ltr",
+    "keys": 1463,
+    "total": 1463,
+    "partial": false,
+    "source_pr": 9411
+  },
+  {
+    "locale": "wuu",
+    "language": "Wu (Shanghainese)",
+    "label": "吴语（上海话）",
+    "direction": "ltr",
+    "keys": 706,
+    "total": 1463,
+    "partial": true,
+    "source_pr": 9412
+  },
+  {
+    "locale": "fa-IR",
+    "language": "Iranian Persian",
+    "label": "فارسی (ایران)",
+    "direction": "rtl",
+    "keys": 1463,
+    "total": 1463,
+    "partial": false,
+    "source_pr": 9413
+  },
+  {
+    "locale": "am",
+    "language": "Amharic",
+    "label": "አማርኛ",
+    "direction": "ltr",
+    "keys": 1463,
+    "total": 1463,
+    "partial": false,
+    "source_pr": 9414
+  },
+  {
+    "locale": "th",
+    "language": "Thai",
+    "label": "ไทย",
+    "direction": "ltr",
+    "keys": 1463,
+    "total": 1463,
+    "partial": false,
+    "source_pr": 9415
+  },
+  {
+    "locale": "jv",
+    "language": "Javanese",
+    "label": "Basa Jawa",
+    "direction": "ltr",
+    "keys": 1463,
+    "total": 1463,
+    "partial": false,
+    "source_pr": 9416
+  },
+  {
+    "locale": "es",
+    "language": "Spanish",
+    "label": "Español",
+    "direction": "ltr",
+    "keys": 928,
+    "total": 1463,
+    "partial": false,
+    "source_pr": null
+  },
+  {
+    "locale": "fr",
+    "language": "French",
+    "label": "Français",
+    "direction": "ltr",
+    "keys": 870,
+    "total": 1463,
+    "partial": false,
+    "source_pr": null
+  },
+  {
+    "locale": "it",
+    "language": "Italian",
+    "label": "Italiano",
+    "direction": "ltr",
+    "keys": 995,
+    "total": 1463,
+    "partial": false,
+    "source_pr": null
+  },
+  {
+    "locale": "hi",
+    "language": "Hindi",
+    "label": "हिंदी",
+    "direction": "ltr",
+    "keys": 928,
+    "total": 1463,
+    "partial": false,
+    "source_pr": null
+  },
+  {
+    "locale": "id",
+    "language": "Indonesian",
+    "label": "Bahasa",
+    "direction": "ltr",
+    "keys": 830,
+    "total": 1463,
+    "partial": false,
+    "source_pr": null
+  },
+  {
+    "locale": "pl",
+    "language": "Polish",
+    "label": "Polski",
+    "direction": "ltr",
+    "keys": 830,
+    "total": 1463,
+    "partial": false,
+    "source_pr": null
+  },
+  {
+    "locale": "vn",
+    "language": "Vietnamese",
+    "label": "Tiếng Việt",
+    "direction": "ltr",
+    "keys": 830,
+    "total": 1463,
+    "partial": false,
+    "source_pr": null
+  },
+  {
+    "locale": "zh-CN",
+    "language": "Chinese (Simplified)",
+    "label": "简体中文",
+    "direction": "ltr",
+    "keys": 830,
+    "total": 1463,
+    "partial": false,
+    "source_pr": null
+  },
+  {
+    "locale": "zh-TW",
+    "language": "Chinese (Traditional)",
+    "label": "繁體中文",
+    "direction": "ltr",
+    "keys": 830,
+    "total": 1463,
+    "partial": false,
+    "source_pr": null
+  },
+  {
+    "locale": "de-DE",
+    "language": "German",
+    "label": "Deutsch",
+    "direction": "ltr",
+    "keys": 830,
+    "total": 1463,
+    "partial": false,
+    "source_pr": null
+  },
+  {
+    "locale": "cs",
+    "language": "Czech",
+    "label": "Čeština",
+    "direction": "ltr",
+    "keys": 859,
+    "total": 1463,
+    "partial": false,
+    "source_pr": null
+  },
+  {
+    "locale": "pt-BR",
+    "language": "Portuguese (Brazil)",
+    "label": "Português (Brasil)",
+    "direction": "ltr",
+    "keys": 832,
+    "total": 1463,
+    "partial": false,
+    "source_pr": null
+  },
+  {
+    "locale": "ko",
+    "language": "Korean",
+    "label": "한국어",
+    "direction": "ltr",
+    "keys": 927,
+    "total": 1463,
+    "partial": false,
+    "source_pr": null
+  },
+  {
+    "locale": "ja",
+    "language": "Japanese",
+    "label": "日本語",
+    "direction": "ltr",
+    "keys": 1040,
+    "total": 1463,
+    "partial": false,
+    "source_pr": null
+  },
+  {
+    "locale": "ru",
+    "language": "Russian",
+    "label": "Русский",
+    "direction": "ltr",
+    "keys": 875,
+    "total": 1463,
+    "partial": false,
+    "source_pr": null
+  },
+  {
+    "locale": "ca",
+    "language": "Catalan",
+    "label": "Català",
+    "direction": "ltr",
+    "keys": 873,
+    "total": 1463,
+    "partial": false,
+    "source_pr": null
+  }
+]

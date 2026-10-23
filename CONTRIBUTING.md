@@ -1,3 +1,13 @@
+# Contributing to Novera
+
+Development targets [TRON-ABS/Novera](https://github.com/TRON-ABS/Novera). New contributions and release preparation are intended for Novera. Do not open or update contributions against `janhq/jan` on behalf of this project unless the user explicitly asks.
+
+Novera remains public. This development policy does not impose exclusivity on previously published contributions or replace the source license.
+
+The inherited Jan contribution guidance below is retained for technical reference; upstream destinations and team procedures do not govern Novera.
+
+---
+
 # Contributing to Jan
 
 First off, thank you for considering contributing to Jan. It's people like you that make Jan such an amazing project.

@@ -1,204 +1,31 @@
-# Jan - Open-source ChatGPT replacement
+# Novera
 
-<img width="2048" height="280" alt="github jan banner" src="https://github.com/user-attachments/assets/f3f87889-c133-433b-b250-236218150d3f" />
+Novera is an independent public AI assistant developed by TRON-ABS, based on [Jan](https://github.com/janhq/jan). Its direction is to make knowledge and evolving AI capabilities accessible through local and cloud models.
 
-<p align="center">
-  <strong>English</strong> ·
-  <a href="README.zh.md">中文</a> ·
-  <a href="README.ja.md">日本語</a>
-</p>
+Repository: [TRON-ABS/Novera](https://github.com/TRON-ABS/Novera).
 
-<p align="center">
-  <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-  <img alt="GitHub commit activity" src="https://img.shields.io/github/commit-activity/m/janhq/jan"/>
-  <img alt="Github Last Commit" src="https://img.shields.io/github/last-commit/janhq/jan"/>
-  <img alt="Github Contributors" src="https://img.shields.io/github/contributors/janhq/jan"/>
-  <img alt="GitHub closed issues" src="https://img.shields.io/github/issues-closed/janhq/jan"/>
-  <img alt="Discord" src="https://img.shields.io/discord/1107178041848909847?label=discord"/>
-</p>
+## Interface languages
 
-<p align="center">
-  <a href="https://jan.ai/docs/desktop">Getting Started</a>
-  - <a href="https://discord.gg/Exe46xPMbK">Community</a>
-  - <a href="https://jan.ai/changelog">Changelog</a>
-  - <a href="https://github.com/janhq/jan/issues">Bug reports</a>
-</p>
+**36 interface locales are available in source**, including the 19 language contributions now integrated into Novera. [See every language, native label, translation coverage and source contribution](docs/LANGUAGES.md).
 
-Jan is bringing the best of open-source AI in an easy-to-use product. Download and run LLMs with **full control** and **privacy**.
+New catalogs: Amharic, Modern Standard Arabic, Egyptian Arabic, Bengali, Cantonese, Hausa, Iranian Persian, Javanese, Marathi, Nigerian Pidgin, Portuguese (Portugal), Swahili, Tagalog, Tamil, Telugu, Thai, Urdu, Western Punjabi and partial Wu (Shanghainese). Existing languages and script variants are retained.
 
-## Installation
+The 18 full new catalogs cover all 1,463 current English keys. Wu covers 706 keys and falls back to English for missing text. Native-speaker review remains outstanding. This describes the interface; model language capabilities depend on the selected model.
 
-<p align="center">
-  <table>
-    <tr>
-      <!-- Microsoft Store Badge -->
-      <td align="center" valign="middle">
-        <a href="https://apps.microsoft.com/detail/xpdcnfn5cpzlqb">
-          <img height="60"
-            width="200"
-               alt="Get it from Microsoft Store"
-               src="https://get.microsoft.com/images/en-us%20dark.svg"/>
-        </a>
-      </td>
-      <!-- Spacer -->
-      <td width="20"></td>
-      <!-- Flathub Official Badge -->
-      <td align="center" valign="middle">
-        <a href="https://flathub.org/apps/ai.jan.Jan">
-          <img height="60"
-            width="200"
-               alt="Get it on Flathub"
-               src="https://flathub.org/assets/badges/flathub-badge-en.svg"/>
-        </a>
-      </td>
-    </tr>
-  </table>
-</p>
+## Project status
 
-The easiest way to get started is by downloading one of the following versions for your respective operating system:
+Novera identity and language support are maintained in this source repository. No Novera binary has been built or released. Existing Jan releases and installers are not Novera releases.
 
-<table>
-  <tr>
-    <td><b>Platform</b></td>
-    <td><b>Download</b></td>
-  </tr>
-  <tr>
-    <td><b>Windows</b></td>
-    <td><a href='https://app.jan.ai/download/latest/win-x64'>jan.exe</a></td>
-  </tr>
-  <tr>
-    <td><b>macOS</b></td>
-    <td><a href='https://app.jan.ai/download/latest/mac-universal'>jan.dmg</a></td>
-  </tr>
-  <tr>
-    <td><b>Linux (deb)</b></td>
-    <td><a href='https://app.jan.ai/download/latest/linux-amd64-deb'>jan.deb</a></td>
-  </tr>
-  <tr>
-    <td><b>Linux (AppImage)</b></td>
-    <td><a href='https://app.jan.ai/download/latest/linux-amd64-appimage'>jan.AppImage</a></td>
-  </tr>
-  <tr>
-    <td><b>Linux (Arm64)</b></td>
-    <td><a href='https://github.com/janhq/jan/issues/4543#issuecomment-4142429792'>How-to</a></td>
-  </tr>
-</table>
+Automatic application updates are disabled until Novera has its own signing key, release feed and distribution process. GitHub Actions is disabled while builds are on hold.
 
+## Development
 
-Download from [jan.ai](https://jan.ai/) or [GitHub Releases](https://github.com/janhq/jan/releases).
+The project retains the React/TypeScript interface, Rust/Tauri desktop application, local inference plugins, and MCP integrations inherited from Jan. Internal `@janhq/*` package names, Rust library/package names, assistant IDs and some protocol identifiers remain for compatibility; they do not imply affiliation with Jan.
 
-## Features
+Novera uses a separate application identifier (`io.github.tronabs.novera`), default `Novera` data directory and provider keyring namespace. Existing Jan data is not automatically moved or deleted. Import and migration require a separate reviewed step before using existing profiles.
 
-- **Local AI Models**: Download and run LLMs (Llama, Gemma, Qwen, GPT-oss etc.) from HuggingFace
-- **Cloud Integration**: Connect to GPT models via OpenAI, Claude models via Anthropic, Mistral, Groq, MiniMax, and others
-- **Custom Assistants**: Create specialized AI assistants for your tasks
-- **OpenAI-Compatible API**: Local server at `localhost:1337` for other applications
-- **Model Context Protocol**: MCP integration for agentic capabilities
-- **Privacy First**: Everything runs locally when you want it to
+See [the transition record](NOVERA.md), [contribution policy](CONTRIBUTING.md) and [upstream build documentation](docs/UPSTREAM_JAN_README.md). Build instructions are reference material; no build is requested as part of this transition.
 
-## Build from Source
+## Attribution and license
 
-For those who enjoy the scenic route:
-
-### Prerequisites
-
-- Node.js ≥ 20.0.0
-- Yarn ≥ 4.5.3
-- Make ≥ 3.81
-- Rust (for Tauri)
-- (macOS Apple Silicon only) MetalToolchain `xcodebuild -downloadComponent MetalToolchain`
-
-### Run with Make
-
-```bash
-git clone https://github.com/janhq/jan
-cd jan
-make dev
-```
-
-This handles everything: installs dependencies, builds core components, and launches the app.
-
-**Available make targets:**
-- `make dev` - Full development setup and launch
-- `make build` - Production build
-- `make test` - Run tests and linting
-- `make clean` - Delete everything and start fresh
-
-### Manual Commands
-
-```bash
-yarn install
-yarn build
-yarn dev
-```
-
-### Building on Windows
-
-Run `make dev` from **Git Bash** (installed with Git for Windows) — make dispatches its recipes through `sh`, so a plain `cmd.exe` won't work.
-
-You do **not** need a "Native Tools Command Prompt for VS 2022". The bundled llama.cpp engine builds with Ninja + `clang-cl`, and `clang-cl` locates the MSVC toolchain and Windows SDK on its own. What has to be installed (and on `PATH` for `ninja`/`clang-cl`/`cmake`):
-
-- Visual Studio 2022 Build Tools (MSVC x64 workload + Windows SDK)
-- LLVM (provides `clang-cl`)
-- Ninja
-- CMake
-- CUDA Toolkit — only for `JAN_ENGINE_VARIANT=cuda12`/`cuda13` builds
-
-Engine variants are picked with `JAN_ENGINE_VARIANT` (tokens: `cpu`, `vulkan`, `metal`, `cuda12`, `cuda13`, `hip`/`rocm`, joined by `-`), e.g.:
-
-```bash
-make dev JAN_ENGINE_VARIANT=cuda13
-```
-
-**"nvcc fatal : Could not open output file ...fattn-...cu.obj.d"** during `tauri-plugin-llamacpp(build)` means the build path crossed Windows' 260-character `MAX_PATH` limit — nvcc does not honor the long-path opt-in. The build script now detects this and automatically relocates the llama.cpp build tree to a short directory under `%LOCALAPPDATA%\jan-engine`. If you hit path-length errors anyway, set `JAN_ENGINE_BUILD_DIR` to a short path (e.g. `C:\jb`) or move the checkout closer to the drive root.
-
-## System Requirements
-
-**Minimum specs for a decent experience:**
-
-- **macOS**: 13.6+ (8GB RAM for 3B models, 16GB for 7B, 32GB for 13B)
-- **Windows**: 10+ with GPU support for NVIDIA/AMD/Intel Arc
-- **Linux**: Most distributions work, GPU acceleration available
-
-For detailed compatibility, check our [installation guides](https://jan.ai/docs/desktop/mac).
-
-## Troubleshooting
-
-If things go sideways:
-
-1. Check our [troubleshooting docs](https://jan.ai/docs/desktop/troubleshooting)
-2. Copy your error logs and system specs
-3. Ask for help in our [Discord](https://discord.gg/FTk2MvZwJH) `#🆘|jan-help` channel
-
-
-## Contributing
-
-Contributions welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for the full spiel.
-
-> **Note:** Please [sign your commits](CONTRIBUTING.md#signed-commits) so we can verify your contributions.
-
-## Links
-
-- [Documentation](https://jan.ai/docs) - The manual you should read
-- [API Reference](https://jan.ai/api-reference) - For the technically inclined
-- [Changelog](https://jan.ai/changelog) - What we broke and fixed
-- [Discord](https://discord.gg/FTk2MvZwJH) - Where the community lives
-
-## Contact
-
-- **Bugs**: [GitHub Issues](https://github.com/janhq/jan/issues)
-- **Business**: hello@jan.ai
-- **Jobs**: hr@jan.ai
-- **General Discussion**: [Discord](https://discord.gg/FTk2MvZwJH)
-
-## License
-
-Apache 2.0 - Because sharing is caring.
-
-## Acknowledgements
-
-Built on the shoulders of giants:
-
-- [Llama.cpp](https://github.com/ggerganov/llama.cpp)
-- [Tauri](https://tauri.app/)
-- [Scalar](https://github.com/scalar/scalar)
+Novera derives from Jan by Menlo Research and its contributors. Original attribution and the [Apache License 2.0](LICENSE) are retained. Public source and closed pull requests remain accessible; closing a pull request does not make its code exclusive.

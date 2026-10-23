@@ -60,7 +60,8 @@ pub enum UpdateOutcome {
 }
 
 fn update_channel() -> Option<&'static str> {
-    option_env!("JAN_CLI_UPDATE_CHANNEL")
+    // Novera has no independent update channel or signed release feed yet.
+    None
 }
 
 /// The version this binary reports: the nightly build version embedded by CI

@@ -16,6 +16,7 @@
   "claude_code": "Claude Code",
   "https_proxy": "HTTPS Proxy",
   "web_search": "Web Search",
+  "shell": "Shell",
   "browse": "Browse",
   "moreControls": "More controls",
   "starting": "Starting...",
@@ -96,9 +97,9 @@
   "recents": "Recents",
   "hub": "Hub",
   "helpSupport": "Help & Support",
-  "helpUsImproveJan": "Help Us Improve Jan",
+  "helpUsImproveJan": "Help Us Improve Novera",
   "analyticsConsentDetail": "We collect anonymous data to understand feature usage. Your chats and personal information are never tracked. You can change this anytime in Settings > Privacy.",
-  "analyticsConsentQuestion": "Would you like to help us to improve Jan?",
+  "analyticsConsentQuestion": "Would you like to help us to improve Novera?",
   "unstarAll": "Unstar All",
   "unstar": "Unstar",
   "deleteAll": "Delete All",
@@ -143,7 +144,7 @@
   "stop": "Stop",
   "preview": {
     "loading": "Opening…",
-    "unsupported": "Jan can't show this kind of file. Open it to see it in another app.",
+    "unsupported": "Novera can't show this kind of file. Open it to see it in another app.",
     "outside": "This file is no longer in the session workspace.",
     "tooLarge": "Too big to preview. Open it to see it in another app.",
     "reload": "Reload",
@@ -212,7 +213,7 @@
   "noAssistant": "No assistant",
   "customAvatar": "Custom avatar",
   "editAssistant": "Edit Assistant",
-  "jan": "Jan",
+  "jan": "Novera",
   "metadata": "Metadata",
   "regenerate": "Regenerate",
   "threadImage": "Thread image",
@@ -246,7 +247,7 @@
   "confirm": "Confirm",
   "continue": "Continue",
   "loading": "Loading...",
-  "settingUpJan": "Booting up Jan…",
+  "settingUpJan": "Booting up Novera…",
   "registeringExtensions": "Registering extensions…",
   "loadingExtensions": "Loading extensions… ({{done}}/{{total}})",
   "error": "Error",
@@ -537,9 +538,19 @@
     },
     "downloadFailed": {
       "title": "Download Failed",
-      "description": "{{item}} download failed"
+      "description": "{{item}} download failed",
+      "descriptionWithReason": "{{item}} download failed: {{reason}}",
+      "reason": {
+        "dns": "the server name could not be resolved",
+        "refused": "the connection was refused",
+        "timeout": "the connection timed out",
+        "tls": "a secure connection could not be established",
+        "proxy": "the proxy could not be reached",
+        "unreachable": "the server could not be reached"
+      }
     },
     "openSettings": "Open Settings",
+    "openLogs": "Open logs",
     "downloadTokenRequired": {
       "title": "Hugging Face token required",
       "description": "This model requires a Hugging Face access token. Add your token in Settings and retry."
@@ -603,7 +614,7 @@
       "pdfMalformedXref": "{{subject}} has a malformed PDF cross-reference table and could not be parsed. Try opening it in a PDF viewer and re-saving it (File → Print → Save as PDF), then upload again.",
       "pdfScanned": "{{subject}} appears to be a scanned or image-based PDF. OCR isn't supported yet — please upload a text-based PDF.",
       "pdfEncrypted": "{{subject}} is password-protected. Remove the password and try again.",
-      "pdfUnsupportedFeature": "{{subject}} uses a PDF feature Jan can't parse yet (e.g. PostScript color/shading functions). Try re-saving it (File → Print → Save as PDF) to flatten it, then upload again.",
+      "pdfUnsupportedFeature": "{{subject}} uses a PDF feature Novera can't parse yet (e.g. PostScript color/shading functions). Try re-saving it (File → Print → Save as PDF) to flatten it, then upload again.",
       "pdfGeneric": "{{subject}} could not be parsed as a PDF. The file may be corrupted or uses an unsupported PDF feature.",
       "fileTooLarge": "{{subject}} is too large. {{message}}.",
       "unsupportedType": "File type \"{{type}}\" is not supported.",
@@ -723,8 +734,8 @@
   },
   "coworkEmpty": {
     "title": "What are we working on?",
-    "subtitleSandbox": "Give Jan a task. It reads and writes files, runs commands, and works through the steps on its own.",
-    "subtitleFolder": "Give Jan a task. It works directly in {{folder}}, reading and editing files on its own.",
+    "subtitleSandbox": "Give Novera a task. It reads and writes files, runs commands, and works through the steps on its own.",
+    "subtitleFolder": "Give Novera a task. It works directly in {{folder}}, reading and editing files on its own.",
     "try": "Try",
     "sandbox": {
       "first": "Write a Python script that renames files by the date they were taken",
@@ -741,10 +752,10 @@
     "noTerminal": "No terminal",
     "a11y": "Running commands is turned off. Details.",
     "title": "Running commands is turned off",
-    "body": "Jan lets the agent run shell commands only when your system can confine them. No sandbox is available here, so the agent can read, write and edit files in its sandbox — but not run anything.",
-    "fixLinux": "Linux uses bubblewrap. Install it, then restart Jan.",
-    "fixMac": "macOS uses the built-in sandbox at /usr/bin/sandbox-exec. Restart Jan once it is available.",
-    "fixWindows": "Windows uses AppContainer. Restart Jan to try again.",
+    "body": "Novera lets the agent run shell commands only when your system can confine them. No sandbox is available here, so the agent can read, write and edit files in its sandbox — but not run anything.",
+    "fixLinux": "Linux uses bubblewrap. Install it, then restart Novera.",
+    "fixMac": "macOS uses the built-in sandbox at /usr/bin/sandbox-exec. Restart Novera once it is available.",
+    "fixWindows": "Windows uses AppContainer. Restart Novera to try again.",
     "recheck": "Check again"
   },
   "planMode": {

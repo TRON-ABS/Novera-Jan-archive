@@ -59,13 +59,13 @@ pub fn user_agent() -> Option<&'static str> {
     USER_AGENT.get().map(String::as_str)
 }
 
-/// `Jan-Agent/<version> (<os>; <arch>)`, the CLI's product token. "Jan Agent",
+/// `Novera-Agent/<version> (<os>; <arch>)`, the CLI's product token. "Jan Agent",
 /// not "Jan": the desktop's own update checks send `Jan/<version>`, and both
 /// share one version number, so the product name is the only thing that tells
 /// a gateway which client it is talking to.
 pub fn agent_user_agent(version: &str) -> String {
     format!(
-        "Jan-Agent/{} ({}; {})",
+        "Novera-Agent/{} ({}; {})",
         version,
         std::env::consts::OS,
         std::env::consts::ARCH
@@ -226,7 +226,7 @@ mod tests {
             "nothing in the library sets a User-Agent; only the jan binary does"
         );
         let ua = agent_user_agent("0.8.5-1");
-        assert!(ua.starts_with("Jan-Agent/0.8.5-1 ("), "{ua}");
+        assert!(ua.starts_with("Novera-Agent/0.8.5-1 ("), "{ua}");
         assert_eq!(owned(Some(&ua), None), vec![("User-Agent".to_string(), ua)]);
     }
 
@@ -264,7 +264,7 @@ mod tests {
                 ("X-CLIENT-REQUEST-ID", "nor-this"),
                 ("X-Tokamak-Launch-Id", "abc"),
             ]),
-            owned(Some("Jan-Agent/1 (linux; x86_64)"), Some("jan-s1")),
+            owned(Some("Novera-Agent/1 (linux; x86_64)"), Some("jan-s1")),
         );
         assert_eq!(
             out,
@@ -272,7 +272,7 @@ mod tests {
                 ("X-Tokamak-Launch-Id".to_string(), "abc".to_string()),
                 (
                     "User-Agent".to_string(),
-                    "Jan-Agent/1 (linux; x86_64)".to_string()
+                    "Novera-Agent/1 (linux; x86_64)".to_string()
                 ),
                 ("X-Client-Request-Id".to_string(), "jan-s1".to_string()),
                 ("X-Session-Id".to_string(), "s1".to_string()),

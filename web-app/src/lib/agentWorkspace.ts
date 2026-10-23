@@ -23,7 +23,7 @@ export type { SkillMeta }
 
 const dataFolder = async (): Promise<string> => {
   const folder = await getServiceHub().app().getJanDataFolder()
-  if (!folder) throw new Error('Jan data folder is unavailable')
+  if (!folder) throw new Error('Novera data folder is unavailable')
   return folder
 }
 

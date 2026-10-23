@@ -65,17 +65,17 @@ const getStoredLanguage = (): string => {
 // Translation function
 const translate = (key: string, options: Record<string, unknown> = {}): string => {
   const { language, fallbackLng, resources: res, defaultNS } = i18nInstance
-  
+
   // Parse key to extract namespace and actual key
   let namespace = defaultNS
   let translationKey = key
-  
+
   if (key.includes(':')) {
     const parts = key.split(':')
     namespace = parts[0]
     translationKey = parts[1]
   }
-  
+
   // Helper function to get nested value from object using dot notation
   const getNestedValue = (obj: Record<string, unknown>, path: string): string | undefined => {
     return path.split('.').reduce((current, key) => {
@@ -84,7 +84,7 @@ const translate = (key: string, options: Record<string, unknown> = {}): string =
         : undefined
     }, obj as unknown) as string | undefined
   }
-  
+
   // i18next resolves plural forms via `_one`/`_other` key suffixes when a
   // numeric `count` is passed; several resource keys only exist in that form
   // (e.g. htmlArtifact.unresolvedAssets_one), so try the suffixed key first.
@@ -102,7 +102,7 @@ const translate = (key: string, options: Record<string, unknown> = {}): string =
     }
     if (translation !== undefined) break
   }
-  
+
   // Callers may supply an inline `defaultValue`, as i18next allows. Honour it
   // before giving up, so a missing key degrades to real copy rather than
   // rendering the key itself at the user.
@@ -114,22 +114,30 @@ const translate = (key: string, options: Record<string, unknown> = {}): string =
       return key
     }
   }
-  
+
   // Handle interpolation
   if (typeof translation === 'string' && options) {
     return translation.replace(/\{\{(\w+)\}\}/g, (match, variable) => {
       return options[variable] !== undefined ? String(options[variable]) : match
     })
   }
-  
+
   return String(translation)
+}
+
+// Keep the DOM language and base direction in sync, including initial load.
+function syncDocumentLanguage(language: string): void {
+  if (typeof document === 'undefined') return
+  document.documentElement.lang = language === 'vn' ? 'vi' : language
+  document.documentElement.dir = ['ar', 'ur', 'arz', 'pnb', 'fa', 'fa-IR'].includes(language) ? 'rtl' : 'ltr'
 }
 
 // Change language function
 const changeLanguage = (lng: string): void => {
   if (i18nInstance && resources[lng]) {
     i18nInstance.language = lng
-    
+    syncDocumentLanguage(lng)
+
     // Update localStorage
     try {
       const stored = localStorage.getItem(localStorageKey.settingGeneral)
@@ -145,7 +153,7 @@ const changeLanguage = (lng: string): void => {
 // Initialize i18n instance
 const initI18n = (): I18nInstance => {
   const currentLanguage = getStoredLanguage()
-  
+
   i18nInstance = {
     language: currentLanguage,
     fallbackLng: 'en',
@@ -155,7 +163,8 @@ const initI18n = (): I18nInstance => {
     changeLanguage,
     t: translate,
   }
-  
+
+  syncDocumentLanguage(currentLanguage)
   return i18nInstance
 }
 

@@ -13,9 +13,9 @@ use super::helpers::copy_dir_recursive;
 #[cfg(not(feature = "cli"))]
 use crate::core::state::AppState;
 
-/// Canonical Jan app support directory (`%APPDATA%/Jan` on Windows).
+/// Canonical Jan app support directory (`%APPDATA%/Novera` on Windows).
 fn resolve_human_readable_app_data_dir() -> Option<PathBuf> {
-    paths::data_dir().map(|d| d.join(env!("CARGO_PKG_NAME")))
+    paths::data_dir().map(|d| d.join("Novera"))
 }
 
 /// Tauri bundle-id app support directory (e.g. `%APPDATA%/jan.ai.app` on Windows).
@@ -23,7 +23,7 @@ fn resolve_bundle_app_data_dir() -> Option<PathBuf> {
     paths::data_dir().map(|d| d.join(TAURI_BUNDLE_IDENTIFIER))
 }
 
-/// Keep `%APPDATA%/Jan/settings.json` as canonical, but recover from legacy or
+/// Keep `%APPDATA%/Novera/settings.json` as canonical, but recover from legacy or
 /// alternate locations if users removed one directory (#7898).
 fn migrate_legacy_app_configuration(app_data_dir: &Path) -> std::io::Result<()> {
     fs::create_dir_all(app_data_dir)?;
@@ -68,7 +68,7 @@ fn legacy_app_config_candidate_paths(_app_data_dir: &Path) -> Vec<PathBuf> {
 
     #[cfg(target_os = "linux")]
     {
-        let package_name = env!("CARGO_PKG_NAME");
+        let package_name = "Novera";
         if let Some(config_dir) = dirs::config_dir() {
             let legacy = config_dir.join(package_name).join(CONFIGURATION_FILE_NAME);
             if legacy != _app_data_dir.join(CONFIGURATION_FILE_NAME) {
@@ -82,7 +82,7 @@ fn legacy_app_config_candidate_paths(_app_data_dir: &Path) -> Vec<PathBuf> {
 
 #[cfg(not(feature = "cli"))]
 fn app_data_dir_with_fallback<R: Runtime>(app_handle: &tauri::AppHandle<R>) -> PathBuf {
-    let package_name = env!("CARGO_PKG_NAME");
+    let package_name = "Novera";
     paths::data_dir_for(app_handle)
         .unwrap_or_else(|err| {
             log::error!("Failed to get data directory: {err}. Using home directory instead.");
@@ -100,11 +100,11 @@ fn app_data_dir_with_fallback<R: Runtime>(app_handle: &tauri::AppHandle<R>) -> P
 }
 
 /// Resolve the Jan config file path without an AppHandle (for CLI use).
-/// Canonical location is `%APPDATA%/Jan/settings.json` (or OS equivalent),
+/// Canonical location is `%APPDATA%/Novera/settings.json` (or OS equivalent),
 /// with fallback recovery from bundle-id location when needed.
 pub fn resolve_config_file_path() -> PathBuf {
     let app_data = resolve_human_readable_app_data_dir().unwrap_or_else(|| {
-        let package_name = env!("CARGO_PKG_NAME");
+        let package_name = "Novera";
         let home = std::env::var("HOME")
             .or_else(|_| std::env::var("USERPROFILE"))
             .unwrap_or_default();
@@ -164,7 +164,7 @@ pub fn resolve_jan_data_folder() -> PathBuf {
     }
 
     // Default: data_dir/Jan/data  (mirrors default_data_folder_path)
-    let app_name = std::env::var("APP_NAME").unwrap_or_else(|_| "Jan".to_string());
+    let app_name = std::env::var("APP_NAME").unwrap_or_else(|_| "Novera".to_string());
     if let Some(data_dir) = paths::data_dir() {
         return data_dir.join(&app_name).join("data");
     }

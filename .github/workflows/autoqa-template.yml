@@ -233,9 +233,9 @@ jobs:
               echo "JAN_APP_PATH=/tmp/jan-installer.deb" >> $GITHUB_ENV
               echo "IS_NIGHTLY=${{ inputs.is_nightly }}" >> $GITHUB_ENV
               if [ "${{ inputs.is_nightly }}" = "true" ]; then
-                echo "JAN_PROCESS_NAME=Jan-Desktop-nightly" >> $GITHUB_ENV
+                echo "JAN_PROCESS_NAME=Novera-Desktop-nightly" >> $GITHUB_ENV
               else
-                echo "JAN_PROCESS_NAME=Jan-Desktop" >> $GITHUB_ENV
+                echo "JAN_PROCESS_NAME=Novera-Desktop" >> $GITHUB_ENV
               fi
             else
               echo "[FAILED] No .deb file found in artifact"
@@ -250,13 +250,13 @@ jobs:
               "${{ vars.IS_NIGHTLY }}" \
               "$DEFAULT_JAN_APP_URL" \
               "$DEFAULT_IS_NIGHTLY"
-            
+
             # Set the correct environment variables for the test runner
             echo "JAN_APP_PATH=/tmp/jan-installer.deb" >> $GITHUB_ENV
             if [ "${{ inputs.is_nightly }}" = "true" ]; then
-              echo "JAN_PROCESS_NAME=Jan-Desktop-nightly" >> $GITHUB_ENV
+              echo "JAN_PROCESS_NAME=Novera-Desktop-nightly" >> $GITHUB_ENV
             else
-              echo "JAN_PROCESS_NAME=Jan-Desktop" >> $GITHUB_ENV
+              echo "JAN_PROCESS_NAME=Novera-Desktop" >> $GITHUB_ENV
             fi
           fi
 
@@ -355,9 +355,9 @@ jobs:
               echo "JAN_APP_PATH=/tmp/jan-installer.dmg" >> $GITHUB_ENV
               echo "IS_NIGHTLY=${{ inputs.is_nightly }}" >> $GITHUB_ENV
               if [ "${{ inputs.is_nightly }}" = "true" ]; then
-                echo "PROCESS_NAME=Jan-Desktop-nightly" >> $GITHUB_ENV
+                echo "PROCESS_NAME=Novera-Desktop-nightly" >> $GITHUB_ENV
               else
-                echo "PROCESS_NAME=Jan-Desktop" >> $GITHUB_ENV
+                echo "PROCESS_NAME=Novera-Desktop" >> $GITHUB_ENV
               fi
             else
               echo "[FAILED] No .dmg file found in artifact"
@@ -372,13 +372,13 @@ jobs:
               "${{ vars.IS_NIGHTLY }}" \
               "$DEFAULT_JAN_APP_URL" \
               "$DEFAULT_IS_NIGHTLY"
-            
+
             # Set the correct environment variables for the test runner
             echo "JAN_APP_PATH=/tmp/jan-installer.dmg" >> $GITHUB_ENV
             if [ "${{ inputs.is_nightly }}" = "true" ]; then
-              echo "PROCESS_NAME=Jan-Desktop-nightly" >> $GITHUB_ENV
+              echo "PROCESS_NAME=Novera-Desktop-nightly" >> $GITHUB_ENV
             else
-              echo "PROCESS_NAME=Jan-Desktop" >> $GITHUB_ENV
+              echo "PROCESS_NAME=Novera-Desktop" >> $GITHUB_ENV
             fi
           fi
 
@@ -393,7 +393,7 @@ jobs:
           # Check if Homebrew is available
           if command -v brew >/dev/null 2>&1; then
             echo "Homebrew is available"
-            
+
             # Install python-tk if not available
             python3 -c "import tkinter" 2>/dev/null || {
               echo "Installing python-tk via Homebrew..."

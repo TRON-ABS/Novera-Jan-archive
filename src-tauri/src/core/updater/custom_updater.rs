@@ -86,7 +86,7 @@ impl CustomUpdater {
     fn build_user_agent(app_version: &str) -> String {
         let os = std::env::consts::OS;
         let arch = std::env::consts::ARCH;
-        format!("Jan/{} ({}; {})", app_version, os, arch)
+        format!("Novera/{} ({}; {})", app_version, os, arch)
     }
 
     /// Check for updates using endpoints list

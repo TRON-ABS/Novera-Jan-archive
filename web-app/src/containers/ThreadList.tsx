@@ -254,9 +254,9 @@ const ThreadItem = memo(
             <DropdownMenuItem
               data-testid="thread-delete"
               variant="destructive"
-              disabled={thread.title === 'What is Jan?' && !localStorage.getItem('setup-completed')}
+              disabled={['What is Jan?', 'What is Novera?'].includes(thread.title) && !localStorage.getItem('setup-completed')}
               onSelect={() => {
-                if (thread.title !== 'What is Jan?' || localStorage.getItem('setup-completed')) {
+                if (!['What is Jan?', 'What is Novera?'].includes(thread.title) || localStorage.getItem('setup-completed')) {
                   setDeleteConfirmOpen(true)
                 }
               }}
@@ -275,7 +275,7 @@ const ThreadItem = memo(
           onOpenChange={setRenameOpen}
           withoutTrigger
         />
-        
+
         <DeleteThreadDialog
           thread={thread}
           onDelete={deleteThread}

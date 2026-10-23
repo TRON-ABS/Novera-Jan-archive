@@ -27,7 +27,7 @@ const ENTRIES: BundledEntry[] = [
   {
     load: () => import('@janhq/assistant-extension'),
     name: '@janhq/assistant-extension',
-    productName: 'Jan Assistant',
+    productName: 'Novera Assistant',
     version: '1.0.2',
     description:
       'Powers the default AI assistant that works with all your installed models.',
@@ -45,7 +45,7 @@ const ENTRIES: BundledEntry[] = [
     name: '@janhq/download-extension',
     productName: 'Download Manager',
     version: '1.0.0',
-    description: 'Download and manage files and AI models in Jan.',
+    description: 'Download and manage files and AI models in Novera.',
   },
   {
     load: () => import('@janhq/llamacpp-extension'),

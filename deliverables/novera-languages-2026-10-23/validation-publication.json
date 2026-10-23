@@ -1,0 +1,225 @@
+{
+  "locales": 36,
+  "integrated_contributions": 19,
+  "english_keys": 1463,
+  "errors": [],
+  "coverage": [
+    {
+      "locale": "en",
+      "covered": 1463,
+      "total": 1463,
+      "partial": false
+    },
+    {
+      "locale": "bn",
+      "covered": 1463,
+      "total": 1463,
+      "partial": false
+    },
+    {
+      "locale": "ar",
+      "covered": 1463,
+      "total": 1463,
+      "partial": false
+    },
+    {
+      "locale": "ur",
+      "covered": 1463,
+      "total": 1463,
+      "partial": false
+    },
+    {
+      "locale": "pcm",
+      "covered": 1463,
+      "total": 1463,
+      "partial": false
+    },
+    {
+      "locale": "arz",
+      "covered": 1463,
+      "total": 1463,
+      "partial": false
+    },
+    {
+      "locale": "mr",
+      "covered": 1463,
+      "total": 1463,
+      "partial": false
+    },
+    {
+      "locale": "te",
+      "covered": 1463,
+      "total": 1463,
+      "partial": false
+    },
+    {
+      "locale": "ta",
+      "covered": 1463,
+      "total": 1463,
+      "partial": false
+    },
+    {
+      "locale": "sw",
+      "covered": 1463,
+      "total": 1463,
+      "partial": false
+    },
+    {
+      "locale": "ha",
+      "covered": 1463,
+      "total": 1463,
+      "partial": false
+    },
+    {
+      "locale": "pnb",
+      "covered": 1463,
+      "total": 1463,
+      "partial": false
+    },
+    {
+      "locale": "tl",
+      "covered": 1463,
+      "total": 1463,
+      "partial": false
+    },
+    {
+      "locale": "pt-PT",
+      "covered": 1463,
+      "total": 1463,
+      "partial": false
+    },
+    {
+      "locale": "yue",
+      "covered": 1463,
+      "total": 1463,
+      "partial": false
+    },
+    {
+      "locale": "wuu",
+      "covered": 706,
+      "total": 1463,
+      "partial": true
+    },
+    {
+      "locale": "fa-IR",
+      "covered": 1463,
+      "total": 1463,
+      "partial": false
+    },
+    {
+      "locale": "am",
+      "covered": 1463,
+      "total": 1463,
+      "partial": false
+    },
+    {
+      "locale": "th",
+      "covered": 1463,
+      "total": 1463,
+      "partial": false
+    },
+    {
+      "locale": "jv",
+      "covered": 1463,
+      "total": 1463,
+      "partial": false
+    },
+    {
+      "locale": "es",
+      "covered": 928,
+      "total": 1463,
+      "partial": false
+    },
+    {
+      "locale": "fr",
+      "covered": 870,
+      "total": 1463,
+      "partial": false
+    },
+    {
+      "locale": "it",
+      "covered": 995,
+      "total": 1463,
+      "partial": false
+    },
+    {
+      "locale": "hi",
+      "covered": 928,
+      "total": 1463,
+      "partial": false
+    },
+    {
+      "locale": "id",
+      "covered": 830,
+      "total": 1463,
+      "partial": false
+    },
+    {
+      "locale": "pl",
+      "covered": 830,
+      "total": 1463,
+      "partial": false
+    },
+    {
+      "locale": "vn",
+      "covered": 830,
+      "total": 1463,
+      "partial": false
+    },
+    {
+      "locale": "zh-CN",
+      "covered": 830,
+      "total": 1463,
+      "partial": false
+    },
+    {
+      "locale": "zh-TW",
+      "covered": 830,
+      "total": 1463,
+      "partial": false
+    },
+    {
+      "locale": "de-DE",
+      "covered": 830,
+      "total": 1463,
+      "partial": false
+    },
+    {
+      "locale": "cs",
+      "covered": 859,
+      "total": 1463,
+      "partial": false
+    },
+    {
+      "locale": "pt-BR",
+      "covered": 832,
+      "total": 1463,
+      "partial": false
+    },
+    {
+      "locale": "ko",
+      "covered": 927,
+      "total": 1463,
+      "partial": false
+    },
+    {
+      "locale": "ja",
+      "covered": 1040,
+      "total": 1463,
+      "partial": false
+    },
+    {
+      "locale": "ru",
+      "covered": 875,
+      "total": 1463,
+      "partial": false
+    },
+    {
+      "locale": "ca",
+      "covered": 873,
+      "total": 1463,
+      "partial": false
+    }
+  ],
+  "compiled": false
+}

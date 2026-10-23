@@ -1,5 +1,5 @@
 import { useGeneralSetting } from '@/hooks/useGeneralSetting'
-import { useAppTranslation } from '@/i18n'
+import { useAppTranslation } from '@/i18n/hooks'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,6 +12,25 @@ import { ChevronsUpDown } from 'lucide-react'
 
 const LANGUAGES = [
   { value: 'en', label: 'English' },
+  { value: 'bn', label: 'বাংলা' },
+  { value: 'ar', label: 'العربية' },
+  { value: 'ur', label: 'اردو' },
+  { value: 'pcm', label: 'Naijíriá Píjin' },
+  { value: 'arz', label: 'مصري' },
+  { value: 'mr', label: 'मराठी' },
+  { value: 'te', label: 'తెలుగు' },
+  { value: 'ta', label: 'தமிழ்' },
+  { value: 'sw', label: 'Kiswahili' },
+  { value: 'ha', label: 'Hausa' },
+  { value: 'pnb', label: 'پنجابی (شاہ مکھی)' },
+  { value: 'tl', label: 'Tagalog' },
+  { value: 'pt-PT', label: 'Português (Portugal)' },
+  { value: 'yue', label: '粵語' },
+  { value: 'wuu', label: '吴语（上海话）' },
+  { value: 'fa-IR', label: 'فارسی (ایران)' },
+  { value: 'am', label: 'አማርኛ' },
+  { value: 'th', label: 'ไทย' },
+  { value: 'jv', label: 'Basa Jawa' },
   { value: 'es', label: 'Español' },
   { value: 'fr', label: 'Français' },
   { value: 'it', label: 'Italiano' },

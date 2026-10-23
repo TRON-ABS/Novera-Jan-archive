@@ -8,7 +8,7 @@
  */
 
 const IDENTITY =
-  'You are Jan, an agent working on the user’s behalf inside the Jan desktop app. ' +
+  'You are Novera, an agent working on the user’s behalf inside the Novera desktop app. ' +
   'Work autonomously: investigate with your tools before answering, and prefer ' +
   'acting over asking. Be concise; the user sees your tool calls, so do not narrate them.'
 
@@ -108,7 +108,7 @@ const WEB_BLOCK = [
 function environmentBlock(env: CoworkEnvironment): string {
   const lines = ['# Environment', '']
   if (env.os) lines.push(`- OS: ${env.os}${env.arch ? ` (${env.arch})` : ''}`)
-  if (env.appVersion) lines.push(`- App: Jan v${env.appVersion} (desktop)`)
+  if (env.appVersion) lines.push(`- App: Novera v${env.appVersion} (desktop)`)
   lines.push(`- Today's date: ${env.date}`)
   if (env.locale) lines.push(`- User locale: ${env.locale}`)
   lines.push(
@@ -124,7 +124,7 @@ function workspaceBlock(opts: CoworkPromptOptions): string {
   if (opts.readOnlyFolder) {
     // #8882: the attached folder is the working directory itself, so relative
     // paths resolve into it -- a file created by a bare name lands where the
-    // user selected it, not in Jan's data folder. Real user data, so the
+    // user selected it, not in Novera's data folder. Real user data, so the
     // sandbox's anything-goes norms no longer apply.
     lines.push(
       `Your working directory is the shared project folder the user attached: \`${opts.readOnlyFolder}\`.`,
